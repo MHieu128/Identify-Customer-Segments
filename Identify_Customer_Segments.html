@@ -17211,6 +17211,38 @@ SEMIO_VERT: -0.3410344357325908
 
 <span class="c1"># Display the first few cluster predictions</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">cluster_predictions</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
+
+<span class="c1"># Analyze the prominent features of each cluster</span>
+<span class="k">for</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">optimal_clusters</span><span class="p">):</span>
+  <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cluster </span><span class="si">{</span><span class="n">cluster</span><span class="si">}</span><span class="s2">:"</span><span class="p">)</span>
+  <span class="c1"># Get the centroid of the cluster in the PCA space</span>
+  <span class="n">centroid_pca</span> <span class="o">=</span> <span class="n">kmeans_final</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">[</span><span class="n">cluster</span><span class="p">]</span>
+  <span class="c1"># Transform the centroid back to the original feature space</span>
+  <span class="n">centroid_original</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">pca_selected</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">centroid_pca</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)))</span>
+  <span class="c1"># Print the features of the centroid</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">"Features of the centroid in the original feature space:"</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">feature</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">feature_names</span><span class="p">,</span> <span class="n">centroid_original</span><span class="o">.</span><span class="n">flatten</span><span class="p">()):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  
+  <span class="c1"># Analyze the prominent features</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Prominent features analysis:"</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">feature</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">feature_names</span><span class="p">,</span> <span class="n">centroid_original</span><span class="o">.</span><span class="n">flatten</span><span class="p">()):</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>  <span class="c1"># Assuming a threshold to identify prominent features</span>
+      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> - "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+      <span class="c1"># Add interpretation based on the data dictionary</span>
+      <span class="k">if</span> <span class="n">feature</span> <span class="o">==</span> <span class="s1">'INCOME'</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Higher income"</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"Lower income"</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">feature</span> <span class="o">==</span> <span class="s1">'AGE'</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Older age"</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"Younger age"</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">feature</span> <span class="o">==</span> <span class="s1">'URBAN'</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Urban living"</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"Rural living"</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">feature</span> <span class="o">==</span> <span class="s1">'EDUCATION'</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Higher education"</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"Lower education"</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">feature</span> <span class="o">==</span> <span class="s1">'HOUSEHOLD_SIZE'</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Larger household size"</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"Smaller household size"</span><span class="p">)</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Other feature interpretation based on data dictionary"</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -17224,6 +17256,1579 @@ SEMIO_VERT: -0.3410344357325908
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>[3 2 4 0 0 7 6 2 8 6]
+Cluster 0:
+Features of the centroid in the original feature space:
+ALTERSKATEGORIE_GROB: 1.6699881460672612
+ANREDE_KZ: 1.988479519837761
+CJT_GESAMTTYP: 4.003723330963812
+FINANZ_MINIMALIST: 2.236236074991518
+FINANZ_SPARER: 3.974173331628744
+FINANZ_VORSORGER: 2.2318736295366293
+FINANZ_ANLEGER: 4.378508110226187
+FINANZ_UNAUFFAELLIGER: 3.787285812736382
+FINANZ_HAUSBAUER: 2.964233270037693
+FINANZTYP: 2.5907768501307116
+GFK_URLAUBERTYP: 7.863496026049141
+GREEN_AVANTGARDE: 0.19128293011838038
+HEALTH_TYP: 2.2164130976930556
+LP_LEBENSPHASE_FEIN: 17.789490330110223
+LP_LEBENSPHASE_GROB: 5.4777258483585625
+LP_FAMILIE_FEIN: 4.977760201459084
+LP_FAMILIE_GROB: 2.8439893395536755
+LP_STATUS_FEIN: 5.193528909305879
+LP_STATUS_GROB: 2.4754208449933452
+NATIONALITAET_KZ: 1.3049134805352212
+RETOURTYP_BK_S: 2.4409349277810604
+SEMIO_SOZ: 2.706568231018754
+SEMIO_FAM: 3.637985959036406
+SEMIO_REL: 5.1576963626952335
+SEMIO_MAT: 5.060676953527986
+SEMIO_VERT: 2.460661471649907
+SEMIO_LUST: 3.0109810794088143
+SEMIO_ERL: 4.226874684192172
+SEMIO_KULT: 4.1088626510599395
+SEMIO_RAT: 6.313648196984676
+SEMIO_KRIT: 5.31349936837656
+SEMIO_DOM: 6.145445975113416
+SEMIO_KAEM: 5.6773586550817985
+SEMIO_PFLICHT: 6.162638621765638
+SEMIO_TRADV: 5.951389195923877
+SHOPPER_TYP: 1.5918379071760487
+SOHO_KZ: 0.008786056936151447
+VERS_TYP: 1.4267208336820887
+ZABEOTYP: 3.8126815297565844
+ANZ_PERSONEN: 2.0580247356120296
+ANZ_TITEL: 0.0023640026434430337
+HH_EINKOMMEN_SCORE: 4.282831048845136
+W_KEIT_KIND_HH: 3.195836664096969
+WOHNDAUER_2008: 7.595210938421043
+ANZ_HAUSHALTE_AKTIV: 3.453103254653075
+ANZ_HH_TITEL: 0.008202691611829759
+GEBAEUDETYP: 2.5472928079660724
+KONSUMNAEHE: 3.6728185607863786
+MIN_GEBAEUDEJAHR: 1992.731947173281
+OST_WEST_KZ: 4.525564856318205
+WOHNLAGE: 4.29067093813177
+CAMEO_DEUG_2015: 2.2631511836642866
+CAMEO_DEU_2015: 1.3519037570918075
+KBA05_ANTG1: 0.2645415152555772
+KBA05_ANTG2: 0.04294402426118038
+KBA05_ANTG3: 3.900337324073867
+KBA05_ANTG4: 4.94704595136744
+KBA05_GBZ: 3.0707664624027053
+BALLRAUM: 5.391795352139294
+EWDICHTE: 3.974481175874453
+INNENSTADT: 2.645589755481929
+GEBAEUDETYP_RASTER: 3.807045324662059
+KKK: 3.635064979187187
+MOBI_REGIO: 4.185785331553723
+ONLINE_AFFINITAET: 693.5749435980008
+REGIOTYP: 2.8470009395407554
+KBA13_ANZAHL_PKW: 2.44867044987948
+PLZ8_ANTG1: 0.9924626455999234
+PLZ8_ANTG2: 0.25202288953499713
+PLZ8_ANTG3: 1.082447268772145
+PLZ8_ANTG4: 3.532968271684319
+PLZ8_BAUMAX: 3.919629363149453
+PLZ8_HHZ: 2.7914102701129018
+PLZ8_GBZ: 4.041336955092273
+ARBEIT: 2.5302615546330847
+ORTSGR_KLS9: 0.9697175360259449
+RELAT_AB: 3.2897323464194015
+DECADE: 2.531510045823304
+MOVEMENT: 3.251995282950599
+
+Prominent features analysis:
+ALTERSKATEGORIE_GROB: 1.6699881460672612 - Other feature interpretation based on data dictionary
+ANREDE_KZ: 1.988479519837761 - Other feature interpretation based on data dictionary
+CJT_GESAMTTYP: 4.003723330963812 - Other feature interpretation based on data dictionary
+FINANZ_MINIMALIST: 2.236236074991518 - Other feature interpretation based on data dictionary
+FINANZ_SPARER: 3.974173331628744 - Other feature interpretation based on data dictionary
+FINANZ_VORSORGER: 2.2318736295366293 - Other feature interpretation based on data dictionary
+FINANZ_ANLEGER: 4.378508110226187 - Other feature interpretation based on data dictionary
+FINANZ_UNAUFFAELLIGER: 3.787285812736382 - Other feature interpretation based on data dictionary
+FINANZ_HAUSBAUER: 2.964233270037693 - Other feature interpretation based on data dictionary
+FINANZTYP: 2.5907768501307116 - Other feature interpretation based on data dictionary
+GFK_URLAUBERTYP: 7.863496026049141 - Other feature interpretation based on data dictionary
+HEALTH_TYP: 2.2164130976930556 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_FEIN: 17.789490330110223 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_GROB: 5.4777258483585625 - Other feature interpretation based on data dictionary
+LP_FAMILIE_FEIN: 4.977760201459084 - Other feature interpretation based on data dictionary
+LP_FAMILIE_GROB: 2.8439893395536755 - Other feature interpretation based on data dictionary
+LP_STATUS_FEIN: 5.193528909305879 - Other feature interpretation based on data dictionary
+LP_STATUS_GROB: 2.4754208449933452 - Other feature interpretation based on data dictionary
+NATIONALITAET_KZ: 1.3049134805352212 - Other feature interpretation based on data dictionary
+RETOURTYP_BK_S: 2.4409349277810604 - Other feature interpretation based on data dictionary
+SEMIO_SOZ: 2.706568231018754 - Other feature interpretation based on data dictionary
+SEMIO_FAM: 3.637985959036406 - Other feature interpretation based on data dictionary
+SEMIO_REL: 5.1576963626952335 - Other feature interpretation based on data dictionary
+SEMIO_MAT: 5.060676953527986 - Other feature interpretation based on data dictionary
+SEMIO_VERT: 2.460661471649907 - Other feature interpretation based on data dictionary
+SEMIO_LUST: 3.0109810794088143 - Other feature interpretation based on data dictionary
+SEMIO_ERL: 4.226874684192172 - Other feature interpretation based on data dictionary
+SEMIO_KULT: 4.1088626510599395 - Other feature interpretation based on data dictionary
+SEMIO_RAT: 6.313648196984676 - Other feature interpretation based on data dictionary
+SEMIO_KRIT: 5.31349936837656 - Other feature interpretation based on data dictionary
+SEMIO_DOM: 6.145445975113416 - Other feature interpretation based on data dictionary
+SEMIO_KAEM: 5.6773586550817985 - Other feature interpretation based on data dictionary
+SEMIO_PFLICHT: 6.162638621765638 - Other feature interpretation based on data dictionary
+SEMIO_TRADV: 5.951389195923877 - Other feature interpretation based on data dictionary
+SHOPPER_TYP: 1.5918379071760487 - Other feature interpretation based on data dictionary
+VERS_TYP: 1.4267208336820887 - Other feature interpretation based on data dictionary
+ZABEOTYP: 3.8126815297565844 - Other feature interpretation based on data dictionary
+ANZ_PERSONEN: 2.0580247356120296 - Other feature interpretation based on data dictionary
+HH_EINKOMMEN_SCORE: 4.282831048845136 - Other feature interpretation based on data dictionary
+W_KEIT_KIND_HH: 3.195836664096969 - Other feature interpretation based on data dictionary
+WOHNDAUER_2008: 7.595210938421043 - Other feature interpretation based on data dictionary
+ANZ_HAUSHALTE_AKTIV: 3.453103254653075 - Other feature interpretation based on data dictionary
+GEBAEUDETYP: 2.5472928079660724 - Other feature interpretation based on data dictionary
+KONSUMNAEHE: 3.6728185607863786 - Other feature interpretation based on data dictionary
+MIN_GEBAEUDEJAHR: 1992.731947173281 - Other feature interpretation based on data dictionary
+OST_WEST_KZ: 4.525564856318205 - Other feature interpretation based on data dictionary
+WOHNLAGE: 4.29067093813177 - Other feature interpretation based on data dictionary
+CAMEO_DEUG_2015: 2.2631511836642866 - Other feature interpretation based on data dictionary
+CAMEO_DEU_2015: 1.3519037570918075 - Other feature interpretation based on data dictionary
+KBA05_ANTG3: 3.900337324073867 - Other feature interpretation based on data dictionary
+KBA05_ANTG4: 4.94704595136744 - Other feature interpretation based on data dictionary
+KBA05_GBZ: 3.0707664624027053 - Other feature interpretation based on data dictionary
+BALLRAUM: 5.391795352139294 - Other feature interpretation based on data dictionary
+EWDICHTE: 3.974481175874453 - Other feature interpretation based on data dictionary
+INNENSTADT: 2.645589755481929 - Other feature interpretation based on data dictionary
+GEBAEUDETYP_RASTER: 3.807045324662059 - Other feature interpretation based on data dictionary
+KKK: 3.635064979187187 - Other feature interpretation based on data dictionary
+MOBI_REGIO: 4.185785331553723 - Other feature interpretation based on data dictionary
+ONLINE_AFFINITAET: 693.5749435980008 - Other feature interpretation based on data dictionary
+REGIOTYP: 2.8470009395407554 - Other feature interpretation based on data dictionary
+KBA13_ANZAHL_PKW: 2.44867044987948 - Other feature interpretation based on data dictionary
+PLZ8_ANTG1: 0.9924626455999234 - Other feature interpretation based on data dictionary
+PLZ8_ANTG3: 1.082447268772145 - Other feature interpretation based on data dictionary
+PLZ8_ANTG4: 3.532968271684319 - Other feature interpretation based on data dictionary
+PLZ8_BAUMAX: 3.919629363149453 - Other feature interpretation based on data dictionary
+PLZ8_HHZ: 2.7914102701129018 - Other feature interpretation based on data dictionary
+PLZ8_GBZ: 4.041336955092273 - Other feature interpretation based on data dictionary
+ARBEIT: 2.5302615546330847 - Other feature interpretation based on data dictionary
+ORTSGR_KLS9: 0.9697175360259449 - Other feature interpretation based on data dictionary
+RELAT_AB: 3.2897323464194015 - Other feature interpretation based on data dictionary
+DECADE: 2.531510045823304 - Other feature interpretation based on data dictionary
+MOVEMENT: 3.251995282950599 - Other feature interpretation based on data dictionary
+
+
+Cluster 1:
+Features of the centroid in the original feature space:
+ALTERSKATEGORIE_GROB: 3.363163604145039
+ANREDE_KZ: 1.9399828034236362
+CJT_GESAMTTYP: 3.56954272569487
+FINANZ_MINIMALIST: 3.9400305644057516
+FINANZ_SPARER: 1.9956008135200833
+FINANZ_VORSORGER: 3.902074406679493
+FINANZ_ANLEGER: 2.7960269618864313
+FINANZ_UNAUFFAELLIGER: 2.187229095967613
+FINANZ_HAUSBAUER: 2.3843823160113033
+FINANZTYP: 4.395397030549852
+GFK_URLAUBERTYP: 6.540681627175594
+GREEN_AVANTGARDE: 0.5182692780718504
+HEALTH_TYP: 2.0837282096923
+LP_LEBENSPHASE_FEIN: 34.7487769390207
+LP_LEBENSPHASE_GROB: 10.498741335027422
+LP_FAMILIE_FEIN: 9.27707850184036
+LP_FAMILIE_GROB: 4.713443989795
+LP_STATUS_FEIN: 8.262289925038292
+LP_STATUS_GROB: 3.965888091795346
+NATIONALITAET_KZ: 1.053353001826709
+RETOURTYP_BK_S: 3.184003061779795
+SEMIO_SOZ: 3.005242899228092
+SEMIO_FAM: 2.098058374907577
+SEMIO_REL: 2.2766072096619983
+SEMIO_MAT: 2.4508747431754845
+SEMIO_VERT: 3.0931162124174207
+SEMIO_LUST: 5.069082374645563
+SEMIO_ERL: 6.240123026646483
+SEMIO_KULT: 2.24200398448309
+SEMIO_RAT: 3.632429173272736
+SEMIO_KRIT: 5.475412222560312
+SEMIO_DOM: 5.8465133878442055
+SEMIO_KAEM: 5.670317841720745
+SEMIO_PFLICHT: 3.196972107940769
+SEMIO_TRADV: 2.8008591596370778
+SHOPPER_TYP: 2.1663010328070866
+SOHO_KZ: 0.009572260207472514
+VERS_TYP: 1.3607759228126577
+ZABEOTYP: 2.825919190146435
+ANZ_PERSONEN: 3.0820174701188767
+ANZ_TITEL: 0.007391769123845959
+HH_EINKOMMEN_SCORE: 3.1977833648056544
+W_KEIT_KIND_HH: 2.7504351809993746
+WOHNDAUER_2008: 8.661750918137232
+ANZ_HAUSHALTE_AKTIV: 1.6305822923182092
+ANZ_HH_TITEL: 0.014158337184907038
+GEBAEUDETYP: 2.173533549589372
+KONSUMNAEHE: 3.6782908798799996
+MIN_GEBAEUDEJAHR: 1992.7287387078866
+OST_WEST_KZ: 4.313572702017662
+WOHNLAGE: 3.8687732768954763
+CAMEO_DEUG_2015: 2.6612011044763406
+CAMEO_DEU_2015: 1.1232070836306849
+KBA05_ANTG1: 0.09138824365091724
+KBA05_ANTG2: 0.019320953707444632
+KBA05_ANTG3: 4.095834665382455
+KBA05_ANTG4: 4.677607862672629
+KBA05_GBZ: 3.1449357042605266
+BALLRAUM: 5.336922805881795
+EWDICHTE: 4.026664169626766
+INNENSTADT: 2.5703350341511406
+GEBAEUDETYP_RASTER: 4.171053182489323
+KKK: 3.6665933710470613
+MOBI_REGIO: 4.048606095996152
+ONLINE_AFFINITAET: 679.9440671192797
+REGIOTYP: 2.862245938233028
+KBA13_ANZAHL_PKW: 2.422421009021547
+PLZ8_ANTG1: 1.0057083408388452
+PLZ8_ANTG2: 0.279590062100919
+PLZ8_ANTG3: 1.1319837546055307
+PLZ8_ANTG4: 3.4786925729158127
+PLZ8_BAUMAX: 3.8396773686796113
+PLZ8_HHZ: 2.8120984855470086
+PLZ8_GBZ: 4.274416345572303
+ARBEIT: 2.611883466731009
+ORTSGR_KLS9: 0.3484398635011257
+RELAT_AB: 4.978797947462489
+DECADE: 2.2874338127928926
+MOVEMENT: 3.411204018828204
+
+Prominent features analysis:
+ALTERSKATEGORIE_GROB: 3.363163604145039 - Other feature interpretation based on data dictionary
+ANREDE_KZ: 1.9399828034236362 - Other feature interpretation based on data dictionary
+CJT_GESAMTTYP: 3.56954272569487 - Other feature interpretation based on data dictionary
+FINANZ_MINIMALIST: 3.9400305644057516 - Other feature interpretation based on data dictionary
+FINANZ_SPARER: 1.9956008135200833 - Other feature interpretation based on data dictionary
+FINANZ_VORSORGER: 3.902074406679493 - Other feature interpretation based on data dictionary
+FINANZ_ANLEGER: 2.7960269618864313 - Other feature interpretation based on data dictionary
+FINANZ_UNAUFFAELLIGER: 2.187229095967613 - Other feature interpretation based on data dictionary
+FINANZ_HAUSBAUER: 2.3843823160113033 - Other feature interpretation based on data dictionary
+FINANZTYP: 4.395397030549852 - Other feature interpretation based on data dictionary
+GFK_URLAUBERTYP: 6.540681627175594 - Other feature interpretation based on data dictionary
+GREEN_AVANTGARDE: 0.5182692780718504 - Other feature interpretation based on data dictionary
+HEALTH_TYP: 2.0837282096923 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_FEIN: 34.7487769390207 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_GROB: 10.498741335027422 - Other feature interpretation based on data dictionary
+LP_FAMILIE_FEIN: 9.27707850184036 - Other feature interpretation based on data dictionary
+LP_FAMILIE_GROB: 4.713443989795 - Other feature interpretation based on data dictionary
+LP_STATUS_FEIN: 8.262289925038292 - Other feature interpretation based on data dictionary
+LP_STATUS_GROB: 3.965888091795346 - Other feature interpretation based on data dictionary
+NATIONALITAET_KZ: 1.053353001826709 - Other feature interpretation based on data dictionary
+RETOURTYP_BK_S: 3.184003061779795 - Other feature interpretation based on data dictionary
+SEMIO_SOZ: 3.005242899228092 - Other feature interpretation based on data dictionary
+SEMIO_FAM: 2.098058374907577 - Other feature interpretation based on data dictionary
+SEMIO_REL: 2.2766072096619983 - Other feature interpretation based on data dictionary
+SEMIO_MAT: 2.4508747431754845 - Other feature interpretation based on data dictionary
+SEMIO_VERT: 3.0931162124174207 - Other feature interpretation based on data dictionary
+SEMIO_LUST: 5.069082374645563 - Other feature interpretation based on data dictionary
+SEMIO_ERL: 6.240123026646483 - Other feature interpretation based on data dictionary
+SEMIO_KULT: 2.24200398448309 - Other feature interpretation based on data dictionary
+SEMIO_RAT: 3.632429173272736 - Other feature interpretation based on data dictionary
+SEMIO_KRIT: 5.475412222560312 - Other feature interpretation based on data dictionary
+SEMIO_DOM: 5.8465133878442055 - Other feature interpretation based on data dictionary
+SEMIO_KAEM: 5.670317841720745 - Other feature interpretation based on data dictionary
+SEMIO_PFLICHT: 3.196972107940769 - Other feature interpretation based on data dictionary
+SEMIO_TRADV: 2.8008591596370778 - Other feature interpretation based on data dictionary
+SHOPPER_TYP: 2.1663010328070866 - Other feature interpretation based on data dictionary
+VERS_TYP: 1.3607759228126577 - Other feature interpretation based on data dictionary
+ZABEOTYP: 2.825919190146435 - Other feature interpretation based on data dictionary
+ANZ_PERSONEN: 3.0820174701188767 - Other feature interpretation based on data dictionary
+HH_EINKOMMEN_SCORE: 3.1977833648056544 - Other feature interpretation based on data dictionary
+W_KEIT_KIND_HH: 2.7504351809993746 - Other feature interpretation based on data dictionary
+WOHNDAUER_2008: 8.661750918137232 - Other feature interpretation based on data dictionary
+ANZ_HAUSHALTE_AKTIV: 1.6305822923182092 - Other feature interpretation based on data dictionary
+GEBAEUDETYP: 2.173533549589372 - Other feature interpretation based on data dictionary
+KONSUMNAEHE: 3.6782908798799996 - Other feature interpretation based on data dictionary
+MIN_GEBAEUDEJAHR: 1992.7287387078866 - Other feature interpretation based on data dictionary
+OST_WEST_KZ: 4.313572702017662 - Other feature interpretation based on data dictionary
+WOHNLAGE: 3.8687732768954763 - Other feature interpretation based on data dictionary
+CAMEO_DEUG_2015: 2.6612011044763406 - Other feature interpretation based on data dictionary
+CAMEO_DEU_2015: 1.1232070836306849 - Other feature interpretation based on data dictionary
+KBA05_ANTG3: 4.095834665382455 - Other feature interpretation based on data dictionary
+KBA05_ANTG4: 4.677607862672629 - Other feature interpretation based on data dictionary
+KBA05_GBZ: 3.1449357042605266 - Other feature interpretation based on data dictionary
+BALLRAUM: 5.336922805881795 - Other feature interpretation based on data dictionary
+EWDICHTE: 4.026664169626766 - Other feature interpretation based on data dictionary
+INNENSTADT: 2.5703350341511406 - Other feature interpretation based on data dictionary
+GEBAEUDETYP_RASTER: 4.171053182489323 - Other feature interpretation based on data dictionary
+KKK: 3.6665933710470613 - Other feature interpretation based on data dictionary
+MOBI_REGIO: 4.048606095996152 - Other feature interpretation based on data dictionary
+ONLINE_AFFINITAET: 679.9440671192797 - Other feature interpretation based on data dictionary
+REGIOTYP: 2.862245938233028 - Other feature interpretation based on data dictionary
+KBA13_ANZAHL_PKW: 2.422421009021547 - Other feature interpretation based on data dictionary
+PLZ8_ANTG1: 1.0057083408388452 - Other feature interpretation based on data dictionary
+PLZ8_ANTG3: 1.1319837546055307 - Other feature interpretation based on data dictionary
+PLZ8_ANTG4: 3.4786925729158127 - Other feature interpretation based on data dictionary
+PLZ8_BAUMAX: 3.8396773686796113 - Other feature interpretation based on data dictionary
+PLZ8_HHZ: 2.8120984855470086 - Other feature interpretation based on data dictionary
+PLZ8_GBZ: 4.274416345572303 - Other feature interpretation based on data dictionary
+ARBEIT: 2.611883466731009 - Other feature interpretation based on data dictionary
+RELAT_AB: 4.978797947462489 - Other feature interpretation based on data dictionary
+DECADE: 2.2874338127928926 - Other feature interpretation based on data dictionary
+MOVEMENT: 3.411204018828204 - Other feature interpretation based on data dictionary
+
+
+Cluster 2:
+Features of the centroid in the original feature space:
+ALTERSKATEGORIE_GROB: 3.5625991682017486
+ANREDE_KZ: 1.9348379310765218
+CJT_GESAMTTYP: 2.8543470913201183
+FINANZ_MINIMALIST: 3.7381367394446845
+FINANZ_SPARER: 1.5691972906336205
+FINANZ_VORSORGER: 4.351113446047469
+FINANZ_ANLEGER: 2.3493293415688123
+FINANZ_UNAUFFAELLIGER: 1.8648582018717954
+FINANZ_HAUSBAUER: 3.0549532032521007
+FINANZTYP: 4.162869686302081
+GFK_URLAUBERTYP: 6.858873984496674
+GREEN_AVANTGARDE: 0.330413369471652
+HEALTH_TYP: 2.0860043640155657
+LP_LEBENSPHASE_FEIN: 11.997272309313452
+LP_LEBENSPHASE_GROB: 3.311330716013371
+LP_FAMILIE_FEIN: 1.4664521068645762
+LP_FAMILIE_GROB: 1.3285268756180437
+LP_STATUS_FEIN: 6.750286734896343
+LP_STATUS_GROB: 3.324863209949955
+NATIONALITAET_KZ: 1.047779745421002
+RETOURTYP_BK_S: 3.6268113176000987
+SEMIO_SOZ: 2.8498917616865107
+SEMIO_FAM: 2.027417813454545
+SEMIO_REL: 2.0064474288729253
+SEMIO_MAT: 2.3656264949079455
+SEMIO_VERT: 2.9241883005176645
+SEMIO_LUST: 5.213613208054838
+SEMIO_ERL: 6.421101225241602
+SEMIO_KULT: 1.9506990889901412
+SEMIO_RAT: 3.3679622687758592
+SEMIO_KRIT: 6.073741208750397
+SEMIO_DOM: 5.691526835484031
+SEMIO_KAEM: 5.597539922250168
+SEMIO_PFLICHT: 2.7978093536248294
+SEMIO_TRADV: 2.542354417689361
+SHOPPER_TYP: 1.8404987760821703
+SOHO_KZ: 0.008145347506842206
+VERS_TYP: 1.4878795775572904
+ZABEOTYP: 3.021855475756764
+ANZ_PERSONEN: 1.2349627866136386
+ANZ_TITEL: 0.00380424212942333
+HH_EINKOMMEN_SCORE: 3.84756008671215
+W_KEIT_KIND_HH: 4.93657992460738
+WOHNDAUER_2008: 8.22893554755265
+ANZ_HAUSHALTE_AKTIV: 2.7889238508587146
+ANZ_HH_TITEL: 0.012125366842071161
+GEBAEUDETYP: 2.313219281804137
+KONSUMNAEHE: 3.6364688253186577
+MIN_GEBAEUDEJAHR: 1992.6221816848995
+OST_WEST_KZ: 4.499113295273472
+WOHNLAGE: 4.186917285495249
+CAMEO_DEUG_2015: 2.427437848622636
+CAMEO_DEU_2015: 1.3089562886632637
+KBA05_ANTG1: 0.178554132458287
+KBA05_ANTG2: 0.02755412250155309
+KBA05_ANTG3: 4.001998214267606
+KBA05_ANTG4: 4.820113801515149
+KBA05_GBZ: 3.080146558624449
+BALLRAUM: 5.415299771752105
+EWDICHTE: 4.015129364489691
+INNENSTADT: 2.5872512472337603
+GEBAEUDETYP_RASTER: 3.952456839683932
+KKK: 2.1904401253570764
+MOBI_REGIO: 4.063374778548389
+ONLINE_AFFINITAET: 688.668953451355
+REGIOTYP: 2.8453420914244987
+KBA13_ANZAHL_PKW: 2.423334512827874
+PLZ8_ANTG1: 1.000779769593163
+PLZ8_ANTG2: 0.27044113820229065
+PLZ8_ANTG3: 1.1104243209938631
+PLZ8_ANTG4: 3.519698468638501
+PLZ8_BAUMAX: 3.8917039982961192
+PLZ8_HHZ: 2.8250746106169586
+PLZ8_GBZ: 4.122201447781684
+ARBEIT: 2.636860288550591
+ORTSGR_KLS9: 0.13901221798349017
+RELAT_AB: 5.184398466452576
+DECADE: 2.497304356125452
+MOVEMENT: 3.4897928379802488
+
+Prominent features analysis:
+ALTERSKATEGORIE_GROB: 3.5625991682017486 - Other feature interpretation based on data dictionary
+ANREDE_KZ: 1.9348379310765218 - Other feature interpretation based on data dictionary
+CJT_GESAMTTYP: 2.8543470913201183 - Other feature interpretation based on data dictionary
+FINANZ_MINIMALIST: 3.7381367394446845 - Other feature interpretation based on data dictionary
+FINANZ_SPARER: 1.5691972906336205 - Other feature interpretation based on data dictionary
+FINANZ_VORSORGER: 4.351113446047469 - Other feature interpretation based on data dictionary
+FINANZ_ANLEGER: 2.3493293415688123 - Other feature interpretation based on data dictionary
+FINANZ_UNAUFFAELLIGER: 1.8648582018717954 - Other feature interpretation based on data dictionary
+FINANZ_HAUSBAUER: 3.0549532032521007 - Other feature interpretation based on data dictionary
+FINANZTYP: 4.162869686302081 - Other feature interpretation based on data dictionary
+GFK_URLAUBERTYP: 6.858873984496674 - Other feature interpretation based on data dictionary
+HEALTH_TYP: 2.0860043640155657 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_FEIN: 11.997272309313452 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_GROB: 3.311330716013371 - Other feature interpretation based on data dictionary
+LP_FAMILIE_FEIN: 1.4664521068645762 - Other feature interpretation based on data dictionary
+LP_FAMILIE_GROB: 1.3285268756180437 - Other feature interpretation based on data dictionary
+LP_STATUS_FEIN: 6.750286734896343 - Other feature interpretation based on data dictionary
+LP_STATUS_GROB: 3.324863209949955 - Other feature interpretation based on data dictionary
+NATIONALITAET_KZ: 1.047779745421002 - Other feature interpretation based on data dictionary
+RETOURTYP_BK_S: 3.6268113176000987 - Other feature interpretation based on data dictionary
+SEMIO_SOZ: 2.8498917616865107 - Other feature interpretation based on data dictionary
+SEMIO_FAM: 2.027417813454545 - Other feature interpretation based on data dictionary
+SEMIO_REL: 2.0064474288729253 - Other feature interpretation based on data dictionary
+SEMIO_MAT: 2.3656264949079455 - Other feature interpretation based on data dictionary
+SEMIO_VERT: 2.9241883005176645 - Other feature interpretation based on data dictionary
+SEMIO_LUST: 5.213613208054838 - Other feature interpretation based on data dictionary
+SEMIO_ERL: 6.421101225241602 - Other feature interpretation based on data dictionary
+SEMIO_KULT: 1.9506990889901412 - Other feature interpretation based on data dictionary
+SEMIO_RAT: 3.3679622687758592 - Other feature interpretation based on data dictionary
+SEMIO_KRIT: 6.073741208750397 - Other feature interpretation based on data dictionary
+SEMIO_DOM: 5.691526835484031 - Other feature interpretation based on data dictionary
+SEMIO_KAEM: 5.597539922250168 - Other feature interpretation based on data dictionary
+SEMIO_PFLICHT: 2.7978093536248294 - Other feature interpretation based on data dictionary
+SEMIO_TRADV: 2.542354417689361 - Other feature interpretation based on data dictionary
+SHOPPER_TYP: 1.8404987760821703 - Other feature interpretation based on data dictionary
+VERS_TYP: 1.4878795775572904 - Other feature interpretation based on data dictionary
+ZABEOTYP: 3.021855475756764 - Other feature interpretation based on data dictionary
+ANZ_PERSONEN: 1.2349627866136386 - Other feature interpretation based on data dictionary
+HH_EINKOMMEN_SCORE: 3.84756008671215 - Other feature interpretation based on data dictionary
+W_KEIT_KIND_HH: 4.93657992460738 - Other feature interpretation based on data dictionary
+WOHNDAUER_2008: 8.22893554755265 - Other feature interpretation based on data dictionary
+ANZ_HAUSHALTE_AKTIV: 2.7889238508587146 - Other feature interpretation based on data dictionary
+GEBAEUDETYP: 2.313219281804137 - Other feature interpretation based on data dictionary
+KONSUMNAEHE: 3.6364688253186577 - Other feature interpretation based on data dictionary
+MIN_GEBAEUDEJAHR: 1992.6221816848995 - Other feature interpretation based on data dictionary
+OST_WEST_KZ: 4.499113295273472 - Other feature interpretation based on data dictionary
+WOHNLAGE: 4.186917285495249 - Other feature interpretation based on data dictionary
+CAMEO_DEUG_2015: 2.427437848622636 - Other feature interpretation based on data dictionary
+CAMEO_DEU_2015: 1.3089562886632637 - Other feature interpretation based on data dictionary
+KBA05_ANTG3: 4.001998214267606 - Other feature interpretation based on data dictionary
+KBA05_ANTG4: 4.820113801515149 - Other feature interpretation based on data dictionary
+KBA05_GBZ: 3.080146558624449 - Other feature interpretation based on data dictionary
+BALLRAUM: 5.415299771752105 - Other feature interpretation based on data dictionary
+EWDICHTE: 4.015129364489691 - Other feature interpretation based on data dictionary
+INNENSTADT: 2.5872512472337603 - Other feature interpretation based on data dictionary
+GEBAEUDETYP_RASTER: 3.952456839683932 - Other feature interpretation based on data dictionary
+KKK: 2.1904401253570764 - Other feature interpretation based on data dictionary
+MOBI_REGIO: 4.063374778548389 - Other feature interpretation based on data dictionary
+ONLINE_AFFINITAET: 688.668953451355 - Other feature interpretation based on data dictionary
+REGIOTYP: 2.8453420914244987 - Other feature interpretation based on data dictionary
+KBA13_ANZAHL_PKW: 2.423334512827874 - Other feature interpretation based on data dictionary
+PLZ8_ANTG1: 1.000779769593163 - Other feature interpretation based on data dictionary
+PLZ8_ANTG3: 1.1104243209938631 - Other feature interpretation based on data dictionary
+PLZ8_ANTG4: 3.519698468638501 - Other feature interpretation based on data dictionary
+PLZ8_BAUMAX: 3.8917039982961192 - Other feature interpretation based on data dictionary
+PLZ8_HHZ: 2.8250746106169586 - Other feature interpretation based on data dictionary
+PLZ8_GBZ: 4.122201447781684 - Other feature interpretation based on data dictionary
+ARBEIT: 2.636860288550591 - Other feature interpretation based on data dictionary
+RELAT_AB: 5.184398466452576 - Other feature interpretation based on data dictionary
+DECADE: 2.497304356125452 - Other feature interpretation based on data dictionary
+MOVEMENT: 3.4897928379802488 - Other feature interpretation based on data dictionary
+
+
+Cluster 3:
+Features of the centroid in the original feature space:
+ALTERSKATEGORIE_GROB: 1.5359896341002053
+ANREDE_KZ: 2.022348958581616
+CJT_GESAMTTYP: 4.009671453942175
+FINANZ_MINIMALIST: 1.2211920873910662
+FINANZ_SPARER: 4.203298305308149
+FINANZ_VORSORGER: 2.2017328926396313
+FINANZ_ANLEGER: 4.023350502885532
+FINANZ_UNAUFFAELLIGER: 3.7007469859544653
+FINANZ_HAUSBAUER: 4.1595330012370795
+FINANZTYP: 2.132097984296905
+GFK_URLAUBERTYP: 8.815068841424276
+GREEN_AVANTGARDE: 0.05208684026222507
+HEALTH_TYP: 2.1835103163188805
+LP_LEBENSPHASE_FEIN: 9.750292376114743
+LP_LEBENSPHASE_GROB: 3.228728799892709
+LP_FAMILIE_FEIN: 3.055965983215546
+LP_FAMILIE_GROB: 2.004903239648854
+LP_STATUS_FEIN: 1.8151716857107312
+LP_STATUS_GROB: 1.1195498146461513
+NATIONALITAET_KZ: 1.4072390618773782
+RETOURTYP_BK_S: 2.393444094157461
+SEMIO_SOZ: 3.147742575369431
+SEMIO_FAM: 3.8861529812365534
+SEMIO_REL: 5.340717776075596
+SEMIO_MAT: 5.101796077174189
+SEMIO_VERT: 2.213086402747123
+SEMIO_LUST: 2.5611732508376805
+SEMIO_ERL: 4.088189488435022
+SEMIO_KULT: 4.212096622288817
+SEMIO_RAT: 6.442446262131202
+SEMIO_KRIT: 5.5243627252000005
+SEMIO_DOM: 6.320080586193892
+SEMIO_KAEM: 6.242206764352807
+SEMIO_PFLICHT: 6.344339316360243
+SEMIO_TRADV: 6.0118544149480595
+SHOPPER_TYP: 1.7836214715448289
+SOHO_KZ: 0.007905827617335508
+VERS_TYP: 1.457420462928319
+ZABEOTYP: 4.528309652304262
+ANZ_PERSONEN: 1.4960926063299025
+ANZ_TITEL: 0.0010752212154799962
+HH_EINKOMMEN_SCORE: 5.641092753973371
+W_KEIT_KIND_HH: 4.004561266568785
+WOHNDAUER_2008: 7.225346723629702
+ANZ_HAUSHALTE_AKTIV: 14.483563513819776
+ANZ_HH_TITEL: 0.05807631269386199
+GEBAEUDETYP: 3.529648757096701
+KONSUMNAEHE: 2.084028522252371
+MIN_GEBAEUDEJAHR: 1992.3481139296769
+OST_WEST_KZ: 3.502590378775111
+WOHNLAGE: 7.541217050580542
+CAMEO_DEUG_2015: 0.39106521930079174
+CAMEO_DEU_2015: 1.290634653379122
+KBA05_ANTG1: 1.1803283144655254
+KBA05_ANTG2: 0.6131359814409765
+KBA05_ANTG3: 2.145506554081364
+KBA05_ANTG4: 3.170230693890509
+KBA05_GBZ: 5.166346084118134
+BALLRAUM: 3.37831185342636
+EWDICHTE: 3.4037808325107717
+INNENSTADT: 2.886366817430718
+GEBAEUDETYP_RASTER: 1.7635722696099547
+KKK: 3.062641167266308
+MOBI_REGIO: 4.989856963722055
+ONLINE_AFFINITAET: 516.7719197958861
+REGIOTYP: 1.4646592250556243
+KBA13_ANZAHL_PKW: 3.300295561827186
+PLZ8_ANTG1: 2.4118677015471484
+PLZ8_ANTG2: 1.290731007489914
+PLZ8_ANTG3: 3.1080999161405245
+PLZ8_ANTG4: 3.751800942660719
+PLZ8_BAUMAX: 2.6902058278139283
+PLZ8_HHZ: 3.6533737820912555
+PLZ8_GBZ: 6.95689155841352
+ARBEIT: 3.7444303970359365
+ORTSGR_KLS9: 0.9555069630375588
+RELAT_AB: 3.1938608578792707
+DECADE: 4.408660223111896
+MOVEMENT: 2.0745737070229096
+
+Prominent features analysis:
+ALTERSKATEGORIE_GROB: 1.5359896341002053 - Other feature interpretation based on data dictionary
+ANREDE_KZ: 2.022348958581616 - Other feature interpretation based on data dictionary
+CJT_GESAMTTYP: 4.009671453942175 - Other feature interpretation based on data dictionary
+FINANZ_MINIMALIST: 1.2211920873910662 - Other feature interpretation based on data dictionary
+FINANZ_SPARER: 4.203298305308149 - Other feature interpretation based on data dictionary
+FINANZ_VORSORGER: 2.2017328926396313 - Other feature interpretation based on data dictionary
+FINANZ_ANLEGER: 4.023350502885532 - Other feature interpretation based on data dictionary
+FINANZ_UNAUFFAELLIGER: 3.7007469859544653 - Other feature interpretation based on data dictionary
+FINANZ_HAUSBAUER: 4.1595330012370795 - Other feature interpretation based on data dictionary
+FINANZTYP: 2.132097984296905 - Other feature interpretation based on data dictionary
+GFK_URLAUBERTYP: 8.815068841424276 - Other feature interpretation based on data dictionary
+HEALTH_TYP: 2.1835103163188805 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_FEIN: 9.750292376114743 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_GROB: 3.228728799892709 - Other feature interpretation based on data dictionary
+LP_FAMILIE_FEIN: 3.055965983215546 - Other feature interpretation based on data dictionary
+LP_FAMILIE_GROB: 2.004903239648854 - Other feature interpretation based on data dictionary
+LP_STATUS_FEIN: 1.8151716857107312 - Other feature interpretation based on data dictionary
+LP_STATUS_GROB: 1.1195498146461513 - Other feature interpretation based on data dictionary
+NATIONALITAET_KZ: 1.4072390618773782 - Other feature interpretation based on data dictionary
+RETOURTYP_BK_S: 2.393444094157461 - Other feature interpretation based on data dictionary
+SEMIO_SOZ: 3.147742575369431 - Other feature interpretation based on data dictionary
+SEMIO_FAM: 3.8861529812365534 - Other feature interpretation based on data dictionary
+SEMIO_REL: 5.340717776075596 - Other feature interpretation based on data dictionary
+SEMIO_MAT: 5.101796077174189 - Other feature interpretation based on data dictionary
+SEMIO_VERT: 2.213086402747123 - Other feature interpretation based on data dictionary
+SEMIO_LUST: 2.5611732508376805 - Other feature interpretation based on data dictionary
+SEMIO_ERL: 4.088189488435022 - Other feature interpretation based on data dictionary
+SEMIO_KULT: 4.212096622288817 - Other feature interpretation based on data dictionary
+SEMIO_RAT: 6.442446262131202 - Other feature interpretation based on data dictionary
+SEMIO_KRIT: 5.5243627252000005 - Other feature interpretation based on data dictionary
+SEMIO_DOM: 6.320080586193892 - Other feature interpretation based on data dictionary
+SEMIO_KAEM: 6.242206764352807 - Other feature interpretation based on data dictionary
+SEMIO_PFLICHT: 6.344339316360243 - Other feature interpretation based on data dictionary
+SEMIO_TRADV: 6.0118544149480595 - Other feature interpretation based on data dictionary
+SHOPPER_TYP: 1.7836214715448289 - Other feature interpretation based on data dictionary
+VERS_TYP: 1.457420462928319 - Other feature interpretation based on data dictionary
+ZABEOTYP: 4.528309652304262 - Other feature interpretation based on data dictionary
+ANZ_PERSONEN: 1.4960926063299025 - Other feature interpretation based on data dictionary
+HH_EINKOMMEN_SCORE: 5.641092753973371 - Other feature interpretation based on data dictionary
+W_KEIT_KIND_HH: 4.004561266568785 - Other feature interpretation based on data dictionary
+WOHNDAUER_2008: 7.225346723629702 - Other feature interpretation based on data dictionary
+ANZ_HAUSHALTE_AKTIV: 14.483563513819776 - Other feature interpretation based on data dictionary
+GEBAEUDETYP: 3.529648757096701 - Other feature interpretation based on data dictionary
+KONSUMNAEHE: 2.084028522252371 - Other feature interpretation based on data dictionary
+MIN_GEBAEUDEJAHR: 1992.3481139296769 - Other feature interpretation based on data dictionary
+OST_WEST_KZ: 3.502590378775111 - Other feature interpretation based on data dictionary
+WOHNLAGE: 7.541217050580542 - Other feature interpretation based on data dictionary
+CAMEO_DEU_2015: 1.290634653379122 - Other feature interpretation based on data dictionary
+KBA05_ANTG1: 1.1803283144655254 - Other feature interpretation based on data dictionary
+KBA05_ANTG2: 0.6131359814409765 - Other feature interpretation based on data dictionary
+KBA05_ANTG3: 2.145506554081364 - Other feature interpretation based on data dictionary
+KBA05_ANTG4: 3.170230693890509 - Other feature interpretation based on data dictionary
+KBA05_GBZ: 5.166346084118134 - Other feature interpretation based on data dictionary
+BALLRAUM: 3.37831185342636 - Other feature interpretation based on data dictionary
+EWDICHTE: 3.4037808325107717 - Other feature interpretation based on data dictionary
+INNENSTADT: 2.886366817430718 - Other feature interpretation based on data dictionary
+GEBAEUDETYP_RASTER: 1.7635722696099547 - Other feature interpretation based on data dictionary
+KKK: 3.062641167266308 - Other feature interpretation based on data dictionary
+MOBI_REGIO: 4.989856963722055 - Other feature interpretation based on data dictionary
+ONLINE_AFFINITAET: 516.7719197958861 - Other feature interpretation based on data dictionary
+REGIOTYP: 1.4646592250556243 - Other feature interpretation based on data dictionary
+KBA13_ANZAHL_PKW: 3.300295561827186 - Other feature interpretation based on data dictionary
+PLZ8_ANTG1: 2.4118677015471484 - Other feature interpretation based on data dictionary
+PLZ8_ANTG2: 1.290731007489914 - Other feature interpretation based on data dictionary
+PLZ8_ANTG3: 3.1080999161405245 - Other feature interpretation based on data dictionary
+PLZ8_ANTG4: 3.751800942660719 - Other feature interpretation based on data dictionary
+PLZ8_BAUMAX: 2.6902058278139283 - Other feature interpretation based on data dictionary
+PLZ8_HHZ: 3.6533737820912555 - Other feature interpretation based on data dictionary
+PLZ8_GBZ: 6.95689155841352 - Other feature interpretation based on data dictionary
+ARBEIT: 3.7444303970359365 - Other feature interpretation based on data dictionary
+ORTSGR_KLS9: 0.9555069630375588 - Other feature interpretation based on data dictionary
+RELAT_AB: 3.1938608578792707 - Other feature interpretation based on data dictionary
+DECADE: 4.408660223111896 - Other feature interpretation based on data dictionary
+MOVEMENT: 2.0745737070229096 - Other feature interpretation based on data dictionary
+
+
+Cluster 4:
+Features of the centroid in the original feature space:
+ALTERSKATEGORIE_GROB: 3.2397714332208642
+ANREDE_KZ: 1.0723972771038746
+CJT_GESAMTTYP: 3.366669226518116
+FINANZ_MINIMALIST: 4.690880658469497
+FINANZ_SPARER: 1.8875233647594014
+FINANZ_VORSORGER: 4.059044912865663
+FINANZ_ANLEGER: 2.055108200795231
+FINANZ_UNAUFFAELLIGER: 2.1729516142386225
+FINANZ_HAUSBAUER: 1.8468227772579013
+FINANZTYP: 4.765339010143775
+GFK_URLAUBERTYP: 6.38987712596068
+GREEN_AVANTGARDE: 0.48935525007647007
+HEALTH_TYP: 2.2225443694410374
+LP_LEBENSPHASE_FEIN: 35.59526806651302
+LP_LEBENSPHASE_GROB: 10.763701092461371
+LP_FAMILIE_FEIN: 9.484936834225634
+LP_FAMILIE_GROB: 4.795019070850284
+LP_STATUS_FEIN: 8.474554197735483
+LP_STATUS_GROB: 4.084988374015718
+NATIONALITAET_KZ: 1.066280178339406
+RETOURTYP_BK_S: 3.669376799421502
+SEMIO_SOZ: 4.81613657404796
+SEMIO_FAM: 4.727512545192436
+SEMIO_REL: 3.7714899287921573
+SEMIO_MAT: 3.503002229261034
+SEMIO_VERT: 6.013955405316407
+SEMIO_LUST: 5.096573210816661
+SEMIO_ERL: 4.204269200667726
+SEMIO_KULT: 4.969040991900251
+SEMIO_RAT: 2.698122801027292
+SEMIO_KRIT: 3.0205626743724565
+SEMIO_DOM: 3.350313258207424
+SEMIO_KAEM: 2.588945807101239
+SEMIO_PFLICHT: 3.289942565156077
+SEMIO_TRADV: 3.0282386269006274
+SHOPPER_TYP: 1.2753002474144544
+SOHO_KZ: 0.01082648041655523
+VERS_TYP: 1.6441176631027579
+ZABEOTYP: 2.282850517857259
+ANZ_PERSONEN: 3.2475715169505577
+ANZ_TITEL: 0.007474378414012502
+HH_EINKOMMEN_SCORE: 3.111959379230011
+W_KEIT_KIND_HH: 2.9325036664700024
+WOHNDAUER_2008: 8.731183563517448
+ANZ_HAUSHALTE_AKTIV: 1.6500149938137323
+ANZ_HH_TITEL: 0.013464140097206999
+GEBAEUDETYP: 2.173991653845098
+KONSUMNAEHE: 3.6915853993946577
+MIN_GEBAEUDEJAHR: 1992.7345992191254
+OST_WEST_KZ: 4.256481220848123
+WOHNLAGE: 3.940584781138438
+CAMEO_DEUG_2015: 2.650870066238927
+CAMEO_DEU_2015: 1.1213013751112682
+KBA05_ANTG1: 0.1001357785639827
+KBA05_ANTG2: 0.012991454750518883
+KBA05_ANTG3: 4.087916101083347
+KBA05_ANTG4: 4.736346976242608
+KBA05_GBZ: 3.2084523482441596
+BALLRAUM: 5.317647854222706
+EWDICHTE: 4.010361279616585
+INNENSTADT: 2.6268582202643955
+GEBAEUDETYP_RASTER: 4.158142768611935
+KKK: 3.657416649612461
+MOBI_REGIO: 4.103356043188262
+ONLINE_AFFINITAET: 675.0484059998299
+REGIOTYP: 2.870140629959101
+KBA13_ANZAHL_PKW: 2.4186701978087575
+PLZ8_ANTG1: 0.9981588241480438
+PLZ8_ANTG2: 0.28748136244138184
+PLZ8_ANTG3: 1.129993628240235
+PLZ8_ANTG4: 3.4772713467703666
+PLZ8_BAUMAX: 3.83519078804604
+PLZ8_HHZ: 2.7766673633148535
+PLZ8_GBZ: 4.276777184491061
+ARBEIT: 2.6409223224470555
+ORTSGR_KLS9: 0.31363739763570186
+RELAT_AB: 4.97125613076584
+DECADE: 2.3315552415643648
+MOVEMENT: 3.4180046478414567
+
+Prominent features analysis:
+ALTERSKATEGORIE_GROB: 3.2397714332208642 - Other feature interpretation based on data dictionary
+ANREDE_KZ: 1.0723972771038746 - Other feature interpretation based on data dictionary
+CJT_GESAMTTYP: 3.366669226518116 - Other feature interpretation based on data dictionary
+FINANZ_MINIMALIST: 4.690880658469497 - Other feature interpretation based on data dictionary
+FINANZ_SPARER: 1.8875233647594014 - Other feature interpretation based on data dictionary
+FINANZ_VORSORGER: 4.059044912865663 - Other feature interpretation based on data dictionary
+FINANZ_ANLEGER: 2.055108200795231 - Other feature interpretation based on data dictionary
+FINANZ_UNAUFFAELLIGER: 2.1729516142386225 - Other feature interpretation based on data dictionary
+FINANZ_HAUSBAUER: 1.8468227772579013 - Other feature interpretation based on data dictionary
+FINANZTYP: 4.765339010143775 - Other feature interpretation based on data dictionary
+GFK_URLAUBERTYP: 6.38987712596068 - Other feature interpretation based on data dictionary
+HEALTH_TYP: 2.2225443694410374 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_FEIN: 35.59526806651302 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_GROB: 10.763701092461371 - Other feature interpretation based on data dictionary
+LP_FAMILIE_FEIN: 9.484936834225634 - Other feature interpretation based on data dictionary
+LP_FAMILIE_GROB: 4.795019070850284 - Other feature interpretation based on data dictionary
+LP_STATUS_FEIN: 8.474554197735483 - Other feature interpretation based on data dictionary
+LP_STATUS_GROB: 4.084988374015718 - Other feature interpretation based on data dictionary
+NATIONALITAET_KZ: 1.066280178339406 - Other feature interpretation based on data dictionary
+RETOURTYP_BK_S: 3.669376799421502 - Other feature interpretation based on data dictionary
+SEMIO_SOZ: 4.81613657404796 - Other feature interpretation based on data dictionary
+SEMIO_FAM: 4.727512545192436 - Other feature interpretation based on data dictionary
+SEMIO_REL: 3.7714899287921573 - Other feature interpretation based on data dictionary
+SEMIO_MAT: 3.503002229261034 - Other feature interpretation based on data dictionary
+SEMIO_VERT: 6.013955405316407 - Other feature interpretation based on data dictionary
+SEMIO_LUST: 5.096573210816661 - Other feature interpretation based on data dictionary
+SEMIO_ERL: 4.204269200667726 - Other feature interpretation based on data dictionary
+SEMIO_KULT: 4.969040991900251 - Other feature interpretation based on data dictionary
+SEMIO_RAT: 2.698122801027292 - Other feature interpretation based on data dictionary
+SEMIO_KRIT: 3.0205626743724565 - Other feature interpretation based on data dictionary
+SEMIO_DOM: 3.350313258207424 - Other feature interpretation based on data dictionary
+SEMIO_KAEM: 2.588945807101239 - Other feature interpretation based on data dictionary
+SEMIO_PFLICHT: 3.289942565156077 - Other feature interpretation based on data dictionary
+SEMIO_TRADV: 3.0282386269006274 - Other feature interpretation based on data dictionary
+SHOPPER_TYP: 1.2753002474144544 - Other feature interpretation based on data dictionary
+VERS_TYP: 1.6441176631027579 - Other feature interpretation based on data dictionary
+ZABEOTYP: 2.282850517857259 - Other feature interpretation based on data dictionary
+ANZ_PERSONEN: 3.2475715169505577 - Other feature interpretation based on data dictionary
+HH_EINKOMMEN_SCORE: 3.111959379230011 - Other feature interpretation based on data dictionary
+W_KEIT_KIND_HH: 2.9325036664700024 - Other feature interpretation based on data dictionary
+WOHNDAUER_2008: 8.731183563517448 - Other feature interpretation based on data dictionary
+ANZ_HAUSHALTE_AKTIV: 1.6500149938137323 - Other feature interpretation based on data dictionary
+GEBAEUDETYP: 2.173991653845098 - Other feature interpretation based on data dictionary
+KONSUMNAEHE: 3.6915853993946577 - Other feature interpretation based on data dictionary
+MIN_GEBAEUDEJAHR: 1992.7345992191254 - Other feature interpretation based on data dictionary
+OST_WEST_KZ: 4.256481220848123 - Other feature interpretation based on data dictionary
+WOHNLAGE: 3.940584781138438 - Other feature interpretation based on data dictionary
+CAMEO_DEUG_2015: 2.650870066238927 - Other feature interpretation based on data dictionary
+CAMEO_DEU_2015: 1.1213013751112682 - Other feature interpretation based on data dictionary
+KBA05_ANTG3: 4.087916101083347 - Other feature interpretation based on data dictionary
+KBA05_ANTG4: 4.736346976242608 - Other feature interpretation based on data dictionary
+KBA05_GBZ: 3.2084523482441596 - Other feature interpretation based on data dictionary
+BALLRAUM: 5.317647854222706 - Other feature interpretation based on data dictionary
+EWDICHTE: 4.010361279616585 - Other feature interpretation based on data dictionary
+INNENSTADT: 2.6268582202643955 - Other feature interpretation based on data dictionary
+GEBAEUDETYP_RASTER: 4.158142768611935 - Other feature interpretation based on data dictionary
+KKK: 3.657416649612461 - Other feature interpretation based on data dictionary
+MOBI_REGIO: 4.103356043188262 - Other feature interpretation based on data dictionary
+ONLINE_AFFINITAET: 675.0484059998299 - Other feature interpretation based on data dictionary
+REGIOTYP: 2.870140629959101 - Other feature interpretation based on data dictionary
+KBA13_ANZAHL_PKW: 2.4186701978087575 - Other feature interpretation based on data dictionary
+PLZ8_ANTG1: 0.9981588241480438 - Other feature interpretation based on data dictionary
+PLZ8_ANTG3: 1.129993628240235 - Other feature interpretation based on data dictionary
+PLZ8_ANTG4: 3.4772713467703666 - Other feature interpretation based on data dictionary
+PLZ8_BAUMAX: 3.83519078804604 - Other feature interpretation based on data dictionary
+PLZ8_HHZ: 2.7766673633148535 - Other feature interpretation based on data dictionary
+PLZ8_GBZ: 4.276777184491061 - Other feature interpretation based on data dictionary
+ARBEIT: 2.6409223224470555 - Other feature interpretation based on data dictionary
+RELAT_AB: 4.97125613076584 - Other feature interpretation based on data dictionary
+DECADE: 2.3315552415643648 - Other feature interpretation based on data dictionary
+MOVEMENT: 3.4180046478414567 - Other feature interpretation based on data dictionary
+
+
+Cluster 5:
+Features of the centroid in the original feature space:
+ALTERSKATEGORIE_GROB: 3.330751281482998
+ANREDE_KZ: 1.032708775084335
+CJT_GESAMTTYP: 3.4209651301585278
+FINANZ_MINIMALIST: 3.2379087709437955
+FINANZ_SPARER: 1.9953712064874098
+FINANZ_VORSORGER: 4.15552330811322
+FINANZ_ANLEGER: 1.6226694146936
+FINANZ_UNAUFFAELLIGER: 1.6317662499389918
+FINANZ_HAUSBAUER: 3.6175318355751136
+FINANZTYP: 5.229335864762813
+GFK_URLAUBERTYP: 7.501669255087111
+GREEN_AVANTGARDE: 0.06495211505002957
+HEALTH_TYP: 2.4368737198292267
+LP_LEBENSPHASE_FEIN: 11.669151998717448
+LP_LEBENSPHASE_GROB: 3.648655552891261
+LP_FAMILIE_FEIN: 2.6350731876114843
+LP_FAMILIE_GROB: 1.8076636556292556
+LP_STATUS_FEIN: 2.2845168940349083
+LP_STATUS_GROB: 1.5276438605650076
+NATIONALITAET_KZ: 1.1489185725503182
+RETOURTYP_BK_S: 4.47935858631868
+SEMIO_SOZ: 5.046032742528956
+SEMIO_FAM: 5.168357529898701
+SEMIO_REL: 3.7274998733061433
+SEMIO_MAT: 4.159195512885224
+SEMIO_VERT: 5.808151388957889
+SEMIO_LUST: 5.155110476614864
+SEMIO_ERL: 4.2421590162244165
+SEMIO_KULT: 5.068804469075621
+SEMIO_RAT: 2.6017760575764806
+SEMIO_KRIT: 3.670966374923043
+SEMIO_DOM: 3.474250138870604
+SEMIO_KAEM: 2.887120185870838
+SEMIO_PFLICHT: 3.2517240175776077
+SEMIO_TRADV: 2.898824255413894
+SHOPPER_TYP: 1.4457111056392926
+SOHO_KZ: 0.007457217038809581
+VERS_TYP: 1.668302248204401
+ZABEOTYP: 3.875223588560198
+ANZ_PERSONEN: 1.4675116940085209
+ANZ_TITEL: 0.006485447371966201
+HH_EINKOMMEN_SCORE: 5.497310652518967
+W_KEIT_KIND_HH: 4.943383489799947
+WOHNDAUER_2008: 8.160473181618972
+ANZ_HAUSHALTE_AKTIV: 15.435635903357033
+ANZ_HH_TITEL: 0.07438241042951452
+GEBAEUDETYP: 3.4166113867997057
+KONSUMNAEHE: 2.2461988319164514
+MIN_GEBAEUDEJAHR: 1992.318026113317
+OST_WEST_KZ: 3.454947375101713
+WOHNLAGE: 7.3424079327672285
+CAMEO_DEUG_2015: 0.3693802801517221
+CAMEO_DEU_2015: 1.3323091671809726
+KBA05_ANTG1: 1.1800947120033383
+KBA05_ANTG2: 0.6038508017011679
+KBA05_ANTG3: 2.1570645611193733
+KBA05_ANTG4: 3.3146323137899216
+KBA05_GBZ: 5.032821541996492
+BALLRAUM: 3.4988938634062206
+EWDICHTE: 3.3835806420443904
+INNENSTADT: 2.8383455426286996
+GEBAEUDETYP_RASTER: 1.7900523710449303
+KKK: 1.8245717527710203
+MOBI_REGIO: 4.873892748568071
+ONLINE_AFFINITAET: 532.495926949855
+REGIOTYP: 1.5107957400876577
+KBA13_ANZAHL_PKW: 3.32416138515704
+PLZ8_ANTG1: 2.3444787012892996
+PLZ8_ANTG2: 1.203568617802136
+PLZ8_ANTG3: 2.9409194109788688
+PLZ8_ANTG4: 3.732891895952217
+PLZ8_BAUMAX: 2.768923517384659
+PLZ8_HHZ: 3.6594278940783393
+PLZ8_GBZ: 6.775009082718664
+ARBEIT: 3.6635906479792455
+ORTSGR_KLS9: 0.16053313265938118
+RELAT_AB: 5.225314591939236
+DECADE: 4.323561937188971
+MOVEMENT: 2.330092382702107
+
+Prominent features analysis:
+ALTERSKATEGORIE_GROB: 3.330751281482998 - Other feature interpretation based on data dictionary
+ANREDE_KZ: 1.032708775084335 - Other feature interpretation based on data dictionary
+CJT_GESAMTTYP: 3.4209651301585278 - Other feature interpretation based on data dictionary
+FINANZ_MINIMALIST: 3.2379087709437955 - Other feature interpretation based on data dictionary
+FINANZ_SPARER: 1.9953712064874098 - Other feature interpretation based on data dictionary
+FINANZ_VORSORGER: 4.15552330811322 - Other feature interpretation based on data dictionary
+FINANZ_ANLEGER: 1.6226694146936 - Other feature interpretation based on data dictionary
+FINANZ_UNAUFFAELLIGER: 1.6317662499389918 - Other feature interpretation based on data dictionary
+FINANZ_HAUSBAUER: 3.6175318355751136 - Other feature interpretation based on data dictionary
+FINANZTYP: 5.229335864762813 - Other feature interpretation based on data dictionary
+GFK_URLAUBERTYP: 7.501669255087111 - Other feature interpretation based on data dictionary
+HEALTH_TYP: 2.4368737198292267 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_FEIN: 11.669151998717448 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_GROB: 3.648655552891261 - Other feature interpretation based on data dictionary
+LP_FAMILIE_FEIN: 2.6350731876114843 - Other feature interpretation based on data dictionary
+LP_FAMILIE_GROB: 1.8076636556292556 - Other feature interpretation based on data dictionary
+LP_STATUS_FEIN: 2.2845168940349083 - Other feature interpretation based on data dictionary
+LP_STATUS_GROB: 1.5276438605650076 - Other feature interpretation based on data dictionary
+NATIONALITAET_KZ: 1.1489185725503182 - Other feature interpretation based on data dictionary
+RETOURTYP_BK_S: 4.47935858631868 - Other feature interpretation based on data dictionary
+SEMIO_SOZ: 5.046032742528956 - Other feature interpretation based on data dictionary
+SEMIO_FAM: 5.168357529898701 - Other feature interpretation based on data dictionary
+SEMIO_REL: 3.7274998733061433 - Other feature interpretation based on data dictionary
+SEMIO_MAT: 4.159195512885224 - Other feature interpretation based on data dictionary
+SEMIO_VERT: 5.808151388957889 - Other feature interpretation based on data dictionary
+SEMIO_LUST: 5.155110476614864 - Other feature interpretation based on data dictionary
+SEMIO_ERL: 4.2421590162244165 - Other feature interpretation based on data dictionary
+SEMIO_KULT: 5.068804469075621 - Other feature interpretation based on data dictionary
+SEMIO_RAT: 2.6017760575764806 - Other feature interpretation based on data dictionary
+SEMIO_KRIT: 3.670966374923043 - Other feature interpretation based on data dictionary
+SEMIO_DOM: 3.474250138870604 - Other feature interpretation based on data dictionary
+SEMIO_KAEM: 2.887120185870838 - Other feature interpretation based on data dictionary
+SEMIO_PFLICHT: 3.2517240175776077 - Other feature interpretation based on data dictionary
+SEMIO_TRADV: 2.898824255413894 - Other feature interpretation based on data dictionary
+SHOPPER_TYP: 1.4457111056392926 - Other feature interpretation based on data dictionary
+VERS_TYP: 1.668302248204401 - Other feature interpretation based on data dictionary
+ZABEOTYP: 3.875223588560198 - Other feature interpretation based on data dictionary
+ANZ_PERSONEN: 1.4675116940085209 - Other feature interpretation based on data dictionary
+HH_EINKOMMEN_SCORE: 5.497310652518967 - Other feature interpretation based on data dictionary
+W_KEIT_KIND_HH: 4.943383489799947 - Other feature interpretation based on data dictionary
+WOHNDAUER_2008: 8.160473181618972 - Other feature interpretation based on data dictionary
+ANZ_HAUSHALTE_AKTIV: 15.435635903357033 - Other feature interpretation based on data dictionary
+GEBAEUDETYP: 3.4166113867997057 - Other feature interpretation based on data dictionary
+KONSUMNAEHE: 2.2461988319164514 - Other feature interpretation based on data dictionary
+MIN_GEBAEUDEJAHR: 1992.318026113317 - Other feature interpretation based on data dictionary
+OST_WEST_KZ: 3.454947375101713 - Other feature interpretation based on data dictionary
+WOHNLAGE: 7.3424079327672285 - Other feature interpretation based on data dictionary
+CAMEO_DEU_2015: 1.3323091671809726 - Other feature interpretation based on data dictionary
+KBA05_ANTG1: 1.1800947120033383 - Other feature interpretation based on data dictionary
+KBA05_ANTG2: 0.6038508017011679 - Other feature interpretation based on data dictionary
+KBA05_ANTG3: 2.1570645611193733 - Other feature interpretation based on data dictionary
+KBA05_ANTG4: 3.3146323137899216 - Other feature interpretation based on data dictionary
+KBA05_GBZ: 5.032821541996492 - Other feature interpretation based on data dictionary
+BALLRAUM: 3.4988938634062206 - Other feature interpretation based on data dictionary
+EWDICHTE: 3.3835806420443904 - Other feature interpretation based on data dictionary
+INNENSTADT: 2.8383455426286996 - Other feature interpretation based on data dictionary
+GEBAEUDETYP_RASTER: 1.7900523710449303 - Other feature interpretation based on data dictionary
+KKK: 1.8245717527710203 - Other feature interpretation based on data dictionary
+MOBI_REGIO: 4.873892748568071 - Other feature interpretation based on data dictionary
+ONLINE_AFFINITAET: 532.495926949855 - Other feature interpretation based on data dictionary
+REGIOTYP: 1.5107957400876577 - Other feature interpretation based on data dictionary
+KBA13_ANZAHL_PKW: 3.32416138515704 - Other feature interpretation based on data dictionary
+PLZ8_ANTG1: 2.3444787012892996 - Other feature interpretation based on data dictionary
+PLZ8_ANTG2: 1.203568617802136 - Other feature interpretation based on data dictionary
+PLZ8_ANTG3: 2.9409194109788688 - Other feature interpretation based on data dictionary
+PLZ8_ANTG4: 3.732891895952217 - Other feature interpretation based on data dictionary
+PLZ8_BAUMAX: 2.768923517384659 - Other feature interpretation based on data dictionary
+PLZ8_HHZ: 3.6594278940783393 - Other feature interpretation based on data dictionary
+PLZ8_GBZ: 6.775009082718664 - Other feature interpretation based on data dictionary
+ARBEIT: 3.6635906479792455 - Other feature interpretation based on data dictionary
+RELAT_AB: 5.225314591939236 - Other feature interpretation based on data dictionary
+DECADE: 4.323561937188971 - Other feature interpretation based on data dictionary
+MOVEMENT: 2.330092382702107 - Other feature interpretation based on data dictionary
+
+
+Cluster 6:
+Features of the centroid in the original feature space:
+ALTERSKATEGORIE_GROB: 3.366366835932261
+ANREDE_KZ: 1.071147157036323
+CJT_GESAMTTYP: 2.777437438142488
+FINANZ_MINIMALIST: 4.579433948517894
+FINANZ_SPARER: 1.5639482414758483
+FINANZ_VORSORGER: 4.314537271026372
+FINANZ_ANLEGER: 1.6970838949261315
+FINANZ_UNAUFFAELLIGER: 1.9195445278777479
+FINANZ_HAUSBAUER: 2.2763514646353986
+FINANZTYP: 4.761798839779993
+GFK_URLAUBERTYP: 6.580681404087725
+GREEN_AVANTGARDE: 0.37926332123411644
+HEALTH_TYP: 2.2421674823900877
+LP_LEBENSPHASE_FEIN: 12.57976352592078
+LP_LEBENSPHASE_GROB: 3.474695201437368
+LP_FAMILIE_FEIN: 1.4889244862971869
+LP_FAMILIE_GROB: 1.33022051787956
+LP_STATUS_FEIN: 7.530027769878124
+LP_STATUS_GROB: 3.703035802099526
+NATIONALITAET_KZ: 1.0563851085539033
+RETOURTYP_BK_S: 3.935403505875534
+SEMIO_SOZ: 4.755285855068381
+SEMIO_FAM: 4.723129528670469
+SEMIO_REL: 3.651498229624565
+SEMIO_MAT: 3.574597675454527
+SEMIO_VERT: 5.897011473218729
+SEMIO_LUST: 5.076109997147213
+SEMIO_ERL: 4.302424757178354
+SEMIO_KULT: 4.860780030804767
+SEMIO_RAT: 2.600840134972688
+SEMIO_KRIT: 3.613541313690831
+SEMIO_DOM: 3.2477181639312915
+SEMIO_KAEM: 2.544501916643663
+SEMIO_PFLICHT: 3.1124199428369206
+SEMIO_TRADV: 2.9293622027667885
+SHOPPER_TYP: 1.2512411789715454
+SOHO_KZ: 0.008531813365490254
+VERS_TYP: 1.5614032827227047
+ZABEOTYP: 2.8349878137168814
+ANZ_PERSONEN: 1.3285355273824904
+ANZ_TITEL: 0.005210420069581229
+HH_EINKOMMEN_SCORE: 3.6214708045138226
+W_KEIT_KIND_HH: 5.099653768363989
+WOHNDAUER_2008: 8.190485812378077
+ANZ_HAUSHALTE_AKTIV: 2.4016843457407537
+ANZ_HH_TITEL: 0.014964435739508723
+GEBAEUDETYP: 2.329775891336643
+KONSUMNAEHE: 3.6232946780203585
+MIN_GEBAEUDEJAHR: 1992.6705073958653
+OST_WEST_KZ: 4.438997742669584
+WOHNLAGE: 4.100631528319185
+CAMEO_DEUG_2015: 2.500367441414449
+CAMEO_DEU_2015: 1.2307233526268764
+KBA05_ANTG1: 0.15066201117514988
+KBA05_ANTG2: 0.022589241803392557
+KBA05_ANTG3: 4.034530265825394
+KBA05_ANTG4: 4.8060620681507835
+KBA05_GBZ: 3.142148070100427
+BALLRAUM: 5.353775509524369
+EWDICHTE: 3.99559040569756
+INNENSTADT: 2.5918935068105915
+GEBAEUDETYP_RASTER: 4.003151571725773
+KKK: 2.265030246382807
+MOBI_REGIO: 4.091538270345452
+ONLINE_AFFINITAET: 677.434300643178
+REGIOTYP: 2.8608242834811506
+KBA13_ANZAHL_PKW: 2.411628289747679
+PLZ8_ANTG1: 0.9873596717244596
+PLZ8_ANTG2: 0.2725009263368923
+PLZ8_ANTG3: 1.1277650860675976
+PLZ8_ANTG4: 3.5081394453990127
+PLZ8_BAUMAX: 3.881970174511884
+PLZ8_HHZ: 2.8117877429140523
+PLZ8_GBZ: 4.1916120138252735
+ARBEIT: 2.6558168215963867
+ORTSGR_KLS9: 0.16535779017559815
+RELAT_AB: 5.116633108859849
+DECADE: 2.4330308561589575
+MOVEMENT: 3.449089341093374
+
+Prominent features analysis:
+ALTERSKATEGORIE_GROB: 3.366366835932261 - Other feature interpretation based on data dictionary
+ANREDE_KZ: 1.071147157036323 - Other feature interpretation based on data dictionary
+CJT_GESAMTTYP: 2.777437438142488 - Other feature interpretation based on data dictionary
+FINANZ_MINIMALIST: 4.579433948517894 - Other feature interpretation based on data dictionary
+FINANZ_SPARER: 1.5639482414758483 - Other feature interpretation based on data dictionary
+FINANZ_VORSORGER: 4.314537271026372 - Other feature interpretation based on data dictionary
+FINANZ_ANLEGER: 1.6970838949261315 - Other feature interpretation based on data dictionary
+FINANZ_UNAUFFAELLIGER: 1.9195445278777479 - Other feature interpretation based on data dictionary
+FINANZ_HAUSBAUER: 2.2763514646353986 - Other feature interpretation based on data dictionary
+FINANZTYP: 4.761798839779993 - Other feature interpretation based on data dictionary
+GFK_URLAUBERTYP: 6.580681404087725 - Other feature interpretation based on data dictionary
+HEALTH_TYP: 2.2421674823900877 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_FEIN: 12.57976352592078 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_GROB: 3.474695201437368 - Other feature interpretation based on data dictionary
+LP_FAMILIE_FEIN: 1.4889244862971869 - Other feature interpretation based on data dictionary
+LP_FAMILIE_GROB: 1.33022051787956 - Other feature interpretation based on data dictionary
+LP_STATUS_FEIN: 7.530027769878124 - Other feature interpretation based on data dictionary
+LP_STATUS_GROB: 3.703035802099526 - Other feature interpretation based on data dictionary
+NATIONALITAET_KZ: 1.0563851085539033 - Other feature interpretation based on data dictionary
+RETOURTYP_BK_S: 3.935403505875534 - Other feature interpretation based on data dictionary
+SEMIO_SOZ: 4.755285855068381 - Other feature interpretation based on data dictionary
+SEMIO_FAM: 4.723129528670469 - Other feature interpretation based on data dictionary
+SEMIO_REL: 3.651498229624565 - Other feature interpretation based on data dictionary
+SEMIO_MAT: 3.574597675454527 - Other feature interpretation based on data dictionary
+SEMIO_VERT: 5.897011473218729 - Other feature interpretation based on data dictionary
+SEMIO_LUST: 5.076109997147213 - Other feature interpretation based on data dictionary
+SEMIO_ERL: 4.302424757178354 - Other feature interpretation based on data dictionary
+SEMIO_KULT: 4.860780030804767 - Other feature interpretation based on data dictionary
+SEMIO_RAT: 2.600840134972688 - Other feature interpretation based on data dictionary
+SEMIO_KRIT: 3.613541313690831 - Other feature interpretation based on data dictionary
+SEMIO_DOM: 3.2477181639312915 - Other feature interpretation based on data dictionary
+SEMIO_KAEM: 2.544501916643663 - Other feature interpretation based on data dictionary
+SEMIO_PFLICHT: 3.1124199428369206 - Other feature interpretation based on data dictionary
+SEMIO_TRADV: 2.9293622027667885 - Other feature interpretation based on data dictionary
+SHOPPER_TYP: 1.2512411789715454 - Other feature interpretation based on data dictionary
+VERS_TYP: 1.5614032827227047 - Other feature interpretation based on data dictionary
+ZABEOTYP: 2.8349878137168814 - Other feature interpretation based on data dictionary
+ANZ_PERSONEN: 1.3285355273824904 - Other feature interpretation based on data dictionary
+HH_EINKOMMEN_SCORE: 3.6214708045138226 - Other feature interpretation based on data dictionary
+W_KEIT_KIND_HH: 5.099653768363989 - Other feature interpretation based on data dictionary
+WOHNDAUER_2008: 8.190485812378077 - Other feature interpretation based on data dictionary
+ANZ_HAUSHALTE_AKTIV: 2.4016843457407537 - Other feature interpretation based on data dictionary
+GEBAEUDETYP: 2.329775891336643 - Other feature interpretation based on data dictionary
+KONSUMNAEHE: 3.6232946780203585 - Other feature interpretation based on data dictionary
+MIN_GEBAEUDEJAHR: 1992.6705073958653 - Other feature interpretation based on data dictionary
+OST_WEST_KZ: 4.438997742669584 - Other feature interpretation based on data dictionary
+WOHNLAGE: 4.100631528319185 - Other feature interpretation based on data dictionary
+CAMEO_DEUG_2015: 2.500367441414449 - Other feature interpretation based on data dictionary
+CAMEO_DEU_2015: 1.2307233526268764 - Other feature interpretation based on data dictionary
+KBA05_ANTG3: 4.034530265825394 - Other feature interpretation based on data dictionary
+KBA05_ANTG4: 4.8060620681507835 - Other feature interpretation based on data dictionary
+KBA05_GBZ: 3.142148070100427 - Other feature interpretation based on data dictionary
+BALLRAUM: 5.353775509524369 - Other feature interpretation based on data dictionary
+EWDICHTE: 3.99559040569756 - Other feature interpretation based on data dictionary
+INNENSTADT: 2.5918935068105915 - Other feature interpretation based on data dictionary
+GEBAEUDETYP_RASTER: 4.003151571725773 - Other feature interpretation based on data dictionary
+KKK: 2.265030246382807 - Other feature interpretation based on data dictionary
+MOBI_REGIO: 4.091538270345452 - Other feature interpretation based on data dictionary
+ONLINE_AFFINITAET: 677.434300643178 - Other feature interpretation based on data dictionary
+REGIOTYP: 2.8608242834811506 - Other feature interpretation based on data dictionary
+KBA13_ANZAHL_PKW: 2.411628289747679 - Other feature interpretation based on data dictionary
+PLZ8_ANTG1: 0.9873596717244596 - Other feature interpretation based on data dictionary
+PLZ8_ANTG3: 1.1277650860675976 - Other feature interpretation based on data dictionary
+PLZ8_ANTG4: 3.5081394453990127 - Other feature interpretation based on data dictionary
+PLZ8_BAUMAX: 3.881970174511884 - Other feature interpretation based on data dictionary
+PLZ8_HHZ: 2.8117877429140523 - Other feature interpretation based on data dictionary
+PLZ8_GBZ: 4.1916120138252735 - Other feature interpretation based on data dictionary
+ARBEIT: 2.6558168215963867 - Other feature interpretation based on data dictionary
+RELAT_AB: 5.116633108859849 - Other feature interpretation based on data dictionary
+DECADE: 2.4330308561589575 - Other feature interpretation based on data dictionary
+MOVEMENT: 3.449089341093374 - Other feature interpretation based on data dictionary
+
+
+Cluster 7:
+Features of the centroid in the original feature space:
+ALTERSKATEGORIE_GROB: 1.767534969585129
+ANREDE_KZ: 0.9736838802324411
+CJT_GESAMTTYP: 4.380271250748275
+FINANZ_MINIMALIST: 2.97271005145771
+FINANZ_SPARER: 4.099043846187821
+FINANZ_VORSORGER: 2.1466066218287954
+FINANZ_ANLEGER: 3.8619260700051106
+FINANZ_UNAUFFAELLIGER: 3.903070647909123
+FINANZ_HAUSBAUER: 2.383147597190592
+FINANZTYP: 3.238619200123542
+GFK_URLAUBERTYP: 7.704643660396813
+GREEN_AVANTGARDE: 0.31641199598871317
+HEALTH_TYP: 2.1683996020125336
+LP_LEBENSPHASE_FEIN: 18.87705431206318
+LP_LEBENSPHASE_GROB: 5.820019355199275
+LP_FAMILIE_FEIN: 5.2742717315361265
+LP_FAMILIE_GROB: 2.9616077745768594
+LP_STATUS_FEIN: 5.675123338790073
+LP_STATUS_GROB: 2.735609638186606
+NATIONALITAET_KZ: 1.230555427451578
+RETOURTYP_BK_S: 2.556112738300999
+SEMIO_SOZ: 6.865348449421704
+SEMIO_FAM: 6.525411213947541
+SEMIO_REL: 6.311885151533049
+SEMIO_MAT: 5.119640001201597
+SEMIO_VERT: 6.254233039880626
+SEMIO_LUST: 3.0270861831306153
+SEMIO_ERL: 2.1064474711630963
+SEMIO_KULT: 6.854002654774781
+SEMIO_RAT: 4.231473837351263
+SEMIO_KRIT: 2.5914185902088103
+SEMIO_DOM: 2.6092167238981636
+SEMIO_KAEM: 1.9543146356692422
+SEMIO_PFLICHT: 5.911127399480689
+SEMIO_TRADV: 5.071946697801714
+SHOPPER_TYP: 0.8394522320183391
+SOHO_KZ: 0.009701066064290692
+VERS_TYP: 1.4746504378514596
+ZABEOTYP: 2.7872809559260303
+ANZ_PERSONEN: 2.1644226025056494
+ANZ_TITEL: 0.002760859466140175
+HH_EINKOMMEN_SCORE: 3.932698744113625
+W_KEIT_KIND_HH: 3.6572734446619237
+WOHNDAUER_2008: 7.624640578645492
+ANZ_HAUSHALTE_AKTIV: 3.6388866231932866
+ANZ_HH_TITEL: 0.007258746096962622
+GEBAEUDETYP: 2.5905394541823865
+KONSUMNAEHE: 3.5629456168815885
+MIN_GEBAEUDEJAHR: 1992.7213511499112
+OST_WEST_KZ: 4.455234217014528
+WOHNLAGE: 4.379437476833016
+CAMEO_DEUG_2015: 2.270835804557691
+CAMEO_DEU_2015: 1.4002243128555454
+KBA05_ANTG1: 0.25503113461393023
+KBA05_ANTG2: 0.04362552183762175
+KBA05_ANTG3: 3.915749985694726
+KBA05_ANTG4: 4.808684778432711
+KBA05_GBZ: 3.1229411224410413
+BALLRAUM: 5.375245770686904
+EWDICHTE: 3.966771434721639
+INNENSTADT: 2.64207607845621
+GEBAEUDETYP_RASTER: 3.7943297656410486
+KKK: 3.802944614670437
+MOBI_REGIO: 4.138873920731571
+ONLINE_AFFINITAET: 691.6875450135979
+REGIOTYP: 2.8178351379965645
+KBA13_ANZAHL_PKW: 2.4840559227345835
+PLZ8_ANTG1: 1.0395159531778406
+PLZ8_ANTG2: 0.27932826528667054
+PLZ8_ANTG3: 1.1288998905692789
+PLZ8_ANTG4: 3.5476260113828078
+PLZ8_BAUMAX: 3.893957397491841
+PLZ8_HHZ: 2.853732792157414
+PLZ8_GBZ: 4.169324528376215
+ARBEIT: 2.6144682943284536
+ORTSGR_KLS9: 0.9777142503380487
+RELAT_AB: 3.475906341727483
+DECADE: 2.587826850125233
+MOVEMENT: 3.261389803018925
+
+Prominent features analysis:
+ALTERSKATEGORIE_GROB: 1.767534969585129 - Other feature interpretation based on data dictionary
+ANREDE_KZ: 0.9736838802324411 - Other feature interpretation based on data dictionary
+CJT_GESAMTTYP: 4.380271250748275 - Other feature interpretation based on data dictionary
+FINANZ_MINIMALIST: 2.97271005145771 - Other feature interpretation based on data dictionary
+FINANZ_SPARER: 4.099043846187821 - Other feature interpretation based on data dictionary
+FINANZ_VORSORGER: 2.1466066218287954 - Other feature interpretation based on data dictionary
+FINANZ_ANLEGER: 3.8619260700051106 - Other feature interpretation based on data dictionary
+FINANZ_UNAUFFAELLIGER: 3.903070647909123 - Other feature interpretation based on data dictionary
+FINANZ_HAUSBAUER: 2.383147597190592 - Other feature interpretation based on data dictionary
+FINANZTYP: 3.238619200123542 - Other feature interpretation based on data dictionary
+GFK_URLAUBERTYP: 7.704643660396813 - Other feature interpretation based on data dictionary
+HEALTH_TYP: 2.1683996020125336 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_FEIN: 18.87705431206318 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_GROB: 5.820019355199275 - Other feature interpretation based on data dictionary
+LP_FAMILIE_FEIN: 5.2742717315361265 - Other feature interpretation based on data dictionary
+LP_FAMILIE_GROB: 2.9616077745768594 - Other feature interpretation based on data dictionary
+LP_STATUS_FEIN: 5.675123338790073 - Other feature interpretation based on data dictionary
+LP_STATUS_GROB: 2.735609638186606 - Other feature interpretation based on data dictionary
+NATIONALITAET_KZ: 1.230555427451578 - Other feature interpretation based on data dictionary
+RETOURTYP_BK_S: 2.556112738300999 - Other feature interpretation based on data dictionary
+SEMIO_SOZ: 6.865348449421704 - Other feature interpretation based on data dictionary
+SEMIO_FAM: 6.525411213947541 - Other feature interpretation based on data dictionary
+SEMIO_REL: 6.311885151533049 - Other feature interpretation based on data dictionary
+SEMIO_MAT: 5.119640001201597 - Other feature interpretation based on data dictionary
+SEMIO_VERT: 6.254233039880626 - Other feature interpretation based on data dictionary
+SEMIO_LUST: 3.0270861831306153 - Other feature interpretation based on data dictionary
+SEMIO_ERL: 2.1064474711630963 - Other feature interpretation based on data dictionary
+SEMIO_KULT: 6.854002654774781 - Other feature interpretation based on data dictionary
+SEMIO_RAT: 4.231473837351263 - Other feature interpretation based on data dictionary
+SEMIO_KRIT: 2.5914185902088103 - Other feature interpretation based on data dictionary
+SEMIO_DOM: 2.6092167238981636 - Other feature interpretation based on data dictionary
+SEMIO_KAEM: 1.9543146356692422 - Other feature interpretation based on data dictionary
+SEMIO_PFLICHT: 5.911127399480689 - Other feature interpretation based on data dictionary
+SEMIO_TRADV: 5.071946697801714 - Other feature interpretation based on data dictionary
+SHOPPER_TYP: 0.8394522320183391 - Other feature interpretation based on data dictionary
+VERS_TYP: 1.4746504378514596 - Other feature interpretation based on data dictionary
+ZABEOTYP: 2.7872809559260303 - Other feature interpretation based on data dictionary
+ANZ_PERSONEN: 2.1644226025056494 - Other feature interpretation based on data dictionary
+HH_EINKOMMEN_SCORE: 3.932698744113625 - Other feature interpretation based on data dictionary
+W_KEIT_KIND_HH: 3.6572734446619237 - Other feature interpretation based on data dictionary
+WOHNDAUER_2008: 7.624640578645492 - Other feature interpretation based on data dictionary
+ANZ_HAUSHALTE_AKTIV: 3.6388866231932866 - Other feature interpretation based on data dictionary
+GEBAEUDETYP: 2.5905394541823865 - Other feature interpretation based on data dictionary
+KONSUMNAEHE: 3.5629456168815885 - Other feature interpretation based on data dictionary
+MIN_GEBAEUDEJAHR: 1992.7213511499112 - Other feature interpretation based on data dictionary
+OST_WEST_KZ: 4.455234217014528 - Other feature interpretation based on data dictionary
+WOHNLAGE: 4.379437476833016 - Other feature interpretation based on data dictionary
+CAMEO_DEUG_2015: 2.270835804557691 - Other feature interpretation based on data dictionary
+CAMEO_DEU_2015: 1.4002243128555454 - Other feature interpretation based on data dictionary
+KBA05_ANTG3: 3.915749985694726 - Other feature interpretation based on data dictionary
+KBA05_ANTG4: 4.808684778432711 - Other feature interpretation based on data dictionary
+KBA05_GBZ: 3.1229411224410413 - Other feature interpretation based on data dictionary
+BALLRAUM: 5.375245770686904 - Other feature interpretation based on data dictionary
+EWDICHTE: 3.966771434721639 - Other feature interpretation based on data dictionary
+INNENSTADT: 2.64207607845621 - Other feature interpretation based on data dictionary
+GEBAEUDETYP_RASTER: 3.7943297656410486 - Other feature interpretation based on data dictionary
+KKK: 3.802944614670437 - Other feature interpretation based on data dictionary
+MOBI_REGIO: 4.138873920731571 - Other feature interpretation based on data dictionary
+ONLINE_AFFINITAET: 691.6875450135979 - Other feature interpretation based on data dictionary
+REGIOTYP: 2.8178351379965645 - Other feature interpretation based on data dictionary
+KBA13_ANZAHL_PKW: 2.4840559227345835 - Other feature interpretation based on data dictionary
+PLZ8_ANTG1: 1.0395159531778406 - Other feature interpretation based on data dictionary
+PLZ8_ANTG3: 1.1288998905692789 - Other feature interpretation based on data dictionary
+PLZ8_ANTG4: 3.5476260113828078 - Other feature interpretation based on data dictionary
+PLZ8_BAUMAX: 3.893957397491841 - Other feature interpretation based on data dictionary
+PLZ8_HHZ: 2.853732792157414 - Other feature interpretation based on data dictionary
+PLZ8_GBZ: 4.169324528376215 - Other feature interpretation based on data dictionary
+ARBEIT: 2.6144682943284536 - Other feature interpretation based on data dictionary
+ORTSGR_KLS9: 0.9777142503380487 - Other feature interpretation based on data dictionary
+RELAT_AB: 3.475906341727483 - Other feature interpretation based on data dictionary
+DECADE: 2.587826850125233 - Other feature interpretation based on data dictionary
+MOVEMENT: 3.261389803018925 - Other feature interpretation based on data dictionary
+
+
+Cluster 8:
+Features of the centroid in the original feature space:
+ALTERSKATEGORIE_GROB: 3.529308287022304
+ANREDE_KZ: 1.9806100172717322
+CJT_GESAMTTYP: 2.9721370693353486
+FINANZ_MINIMALIST: 2.3766788314439333
+FINANZ_SPARER: 2.0094241966169535
+FINANZ_VORSORGER: 4.183963700523679
+FINANZ_ANLEGER: 2.3610645084529907
+FINANZ_UNAUFFAELLIGER: 1.7107438034137805
+FINANZ_HAUSBAUER: 4.385345774953561
+FINANZTYP: 4.3093793413859744
+GFK_URLAUBERTYP: 7.430695692262455
+GREEN_AVANTGARDE: 0.07256054769255227
+HEALTH_TYP: 2.0059407382462044
+LP_LEBENSPHASE_FEIN: 11.64690838773879
+LP_LEBENSPHASE_GROB: 3.6189295591073467
+LP_FAMILIE_FEIN: 2.722023880502734
+LP_FAMILIE_GROB: 1.8544788297684986
+LP_STATUS_FEIN: 1.8944800603845757
+LP_STATUS_GROB: 1.309948187217175
+NATIONALITAET_KZ: 1.0731236760718983
+RETOURTYP_BK_S: 4.204299209848323
+SEMIO_SOZ: 3.258752243993936
+SEMIO_FAM: 2.153400325548951
+SEMIO_REL: 1.9274069574275448
+SEMIO_MAT: 2.457492697491527
+SEMIO_VERT: 2.6596387593452366
+SEMIO_LUST: 5.177146419929306
+SEMIO_ERL: 6.537589692284257
+SEMIO_KULT: 1.8372123944325036
+SEMIO_RAT: 3.3275700947722724
+SEMIO_KRIT: 5.993175964585753
+SEMIO_DOM: 5.907256107923979
+SEMIO_KAEM: 6.212881444313566
+SEMIO_PFLICHT: 2.8166910204893054
+SEMIO_TRADV: 2.3632104300258825
+SHOPPER_TYP: 2.152865217079948
+SOHO_KZ: 0.007469962899546704
+VERS_TYP: 1.6177217649188076
+ZABEOTYP: 3.3399049743534457
+ANZ_PERSONEN: 1.4648374688960892
+ANZ_TITEL: 0.0038208955711528554
+HH_EINKOMMEN_SCORE: 5.467967942720588
+W_KEIT_KIND_HH: 4.727373708911402
+WOHNDAUER_2008: 8.113076216143908
+ANZ_HAUSHALTE_AKTIV: 15.595527428882647
+ANZ_HH_TITEL: 0.09189664318491893
+GEBAEUDETYP: 3.3549330090538008
+KONSUMNAEHE: 2.1900474031847956
+MIN_GEBAEUDEJAHR: 1992.3468455086365
+OST_WEST_KZ: 3.429438866773423
+WOHNLAGE: 7.28114009686371
+CAMEO_DEUG_2015: 0.37581513757334073
+CAMEO_DEU_2015: 1.3019016876272393
+KBA05_ANTG1: 1.1978716885833598
+KBA05_ANTG2: 0.6263984392936923
+KBA05_ANTG3: 2.105311123521645
+KBA05_ANTG4: 3.3293313244860263
+KBA05_GBZ: 5.05196481886024
+BALLRAUM: 3.5044169534467837
+EWDICHTE: 3.465004593623711
+INNENSTADT: 2.868298865951383
+GEBAEUDETYP_RASTER: 1.7786938269937371
+KKK: 1.788093263375973
+MOBI_REGIO: 4.85037371852917
+ONLINE_AFFINITAET: 535.1927068887719
+REGIOTYP: 1.5295728919335179
+KBA13_ANZAHL_PKW: 3.3065914959380427
+PLZ8_ANTG1: 2.3546393789168643
+PLZ8_ANTG2: 1.2115739510727677
+PLZ8_ANTG3: 2.9057637988006375
+PLZ8_ANTG4: 3.72004534784286
+PLZ8_BAUMAX: 2.751645732655429
+PLZ8_HHZ: 3.6460281226574316
+PLZ8_GBZ: 6.737094058696297
+ARBEIT: 3.6878427056250263
+ORTSGR_KLS9: 0.17653450853424363
+RELAT_AB: 4.815500539220005
+DECADE: 4.319859490640813
+MOVEMENT: 2.561916117027347
+
+Prominent features analysis:
+ALTERSKATEGORIE_GROB: 3.529308287022304 - Other feature interpretation based on data dictionary
+ANREDE_KZ: 1.9806100172717322 - Other feature interpretation based on data dictionary
+CJT_GESAMTTYP: 2.9721370693353486 - Other feature interpretation based on data dictionary
+FINANZ_MINIMALIST: 2.3766788314439333 - Other feature interpretation based on data dictionary
+FINANZ_SPARER: 2.0094241966169535 - Other feature interpretation based on data dictionary
+FINANZ_VORSORGER: 4.183963700523679 - Other feature interpretation based on data dictionary
+FINANZ_ANLEGER: 2.3610645084529907 - Other feature interpretation based on data dictionary
+FINANZ_UNAUFFAELLIGER: 1.7107438034137805 - Other feature interpretation based on data dictionary
+FINANZ_HAUSBAUER: 4.385345774953561 - Other feature interpretation based on data dictionary
+FINANZTYP: 4.3093793413859744 - Other feature interpretation based on data dictionary
+GFK_URLAUBERTYP: 7.430695692262455 - Other feature interpretation based on data dictionary
+HEALTH_TYP: 2.0059407382462044 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_FEIN: 11.64690838773879 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_GROB: 3.6189295591073467 - Other feature interpretation based on data dictionary
+LP_FAMILIE_FEIN: 2.722023880502734 - Other feature interpretation based on data dictionary
+LP_FAMILIE_GROB: 1.8544788297684986 - Other feature interpretation based on data dictionary
+LP_STATUS_FEIN: 1.8944800603845757 - Other feature interpretation based on data dictionary
+LP_STATUS_GROB: 1.309948187217175 - Other feature interpretation based on data dictionary
+NATIONALITAET_KZ: 1.0731236760718983 - Other feature interpretation based on data dictionary
+RETOURTYP_BK_S: 4.204299209848323 - Other feature interpretation based on data dictionary
+SEMIO_SOZ: 3.258752243993936 - Other feature interpretation based on data dictionary
+SEMIO_FAM: 2.153400325548951 - Other feature interpretation based on data dictionary
+SEMIO_REL: 1.9274069574275448 - Other feature interpretation based on data dictionary
+SEMIO_MAT: 2.457492697491527 - Other feature interpretation based on data dictionary
+SEMIO_VERT: 2.6596387593452366 - Other feature interpretation based on data dictionary
+SEMIO_LUST: 5.177146419929306 - Other feature interpretation based on data dictionary
+SEMIO_ERL: 6.537589692284257 - Other feature interpretation based on data dictionary
+SEMIO_KULT: 1.8372123944325036 - Other feature interpretation based on data dictionary
+SEMIO_RAT: 3.3275700947722724 - Other feature interpretation based on data dictionary
+SEMIO_KRIT: 5.993175964585753 - Other feature interpretation based on data dictionary
+SEMIO_DOM: 5.907256107923979 - Other feature interpretation based on data dictionary
+SEMIO_KAEM: 6.212881444313566 - Other feature interpretation based on data dictionary
+SEMIO_PFLICHT: 2.8166910204893054 - Other feature interpretation based on data dictionary
+SEMIO_TRADV: 2.3632104300258825 - Other feature interpretation based on data dictionary
+SHOPPER_TYP: 2.152865217079948 - Other feature interpretation based on data dictionary
+VERS_TYP: 1.6177217649188076 - Other feature interpretation based on data dictionary
+ZABEOTYP: 3.3399049743534457 - Other feature interpretation based on data dictionary
+ANZ_PERSONEN: 1.4648374688960892 - Other feature interpretation based on data dictionary
+HH_EINKOMMEN_SCORE: 5.467967942720588 - Other feature interpretation based on data dictionary
+W_KEIT_KIND_HH: 4.727373708911402 - Other feature interpretation based on data dictionary
+WOHNDAUER_2008: 8.113076216143908 - Other feature interpretation based on data dictionary
+ANZ_HAUSHALTE_AKTIV: 15.595527428882647 - Other feature interpretation based on data dictionary
+GEBAEUDETYP: 3.3549330090538008 - Other feature interpretation based on data dictionary
+KONSUMNAEHE: 2.1900474031847956 - Other feature interpretation based on data dictionary
+MIN_GEBAEUDEJAHR: 1992.3468455086365 - Other feature interpretation based on data dictionary
+OST_WEST_KZ: 3.429438866773423 - Other feature interpretation based on data dictionary
+WOHNLAGE: 7.28114009686371 - Other feature interpretation based on data dictionary
+CAMEO_DEU_2015: 1.3019016876272393 - Other feature interpretation based on data dictionary
+KBA05_ANTG1: 1.1978716885833598 - Other feature interpretation based on data dictionary
+KBA05_ANTG2: 0.6263984392936923 - Other feature interpretation based on data dictionary
+KBA05_ANTG3: 2.105311123521645 - Other feature interpretation based on data dictionary
+KBA05_ANTG4: 3.3293313244860263 - Other feature interpretation based on data dictionary
+KBA05_GBZ: 5.05196481886024 - Other feature interpretation based on data dictionary
+BALLRAUM: 3.5044169534467837 - Other feature interpretation based on data dictionary
+EWDICHTE: 3.465004593623711 - Other feature interpretation based on data dictionary
+INNENSTADT: 2.868298865951383 - Other feature interpretation based on data dictionary
+GEBAEUDETYP_RASTER: 1.7786938269937371 - Other feature interpretation based on data dictionary
+KKK: 1.788093263375973 - Other feature interpretation based on data dictionary
+MOBI_REGIO: 4.85037371852917 - Other feature interpretation based on data dictionary
+ONLINE_AFFINITAET: 535.1927068887719 - Other feature interpretation based on data dictionary
+REGIOTYP: 1.5295728919335179 - Other feature interpretation based on data dictionary
+KBA13_ANZAHL_PKW: 3.3065914959380427 - Other feature interpretation based on data dictionary
+PLZ8_ANTG1: 2.3546393789168643 - Other feature interpretation based on data dictionary
+PLZ8_ANTG2: 1.2115739510727677 - Other feature interpretation based on data dictionary
+PLZ8_ANTG3: 2.9057637988006375 - Other feature interpretation based on data dictionary
+PLZ8_ANTG4: 3.72004534784286 - Other feature interpretation based on data dictionary
+PLZ8_BAUMAX: 2.751645732655429 - Other feature interpretation based on data dictionary
+PLZ8_HHZ: 3.6460281226574316 - Other feature interpretation based on data dictionary
+PLZ8_GBZ: 6.737094058696297 - Other feature interpretation based on data dictionary
+ARBEIT: 3.6878427056250263 - Other feature interpretation based on data dictionary
+RELAT_AB: 4.815500539220005 - Other feature interpretation based on data dictionary
+DECADE: 4.319859490640813 - Other feature interpretation based on data dictionary
+MOVEMENT: 2.561916117027347 - Other feature interpretation based on data dictionary
+
+
+Cluster 9:
+Features of the centroid in the original feature space:
+ALTERSKATEGORIE_GROB: 1.87094954817128
+ANREDE_KZ: 0.9631679243399955
+CJT_GESAMTTYP: 3.9186575527199654
+FINANZ_MINIMALIST: 1.9192382184990433
+FINANZ_SPARER: 4.33077079598962
+FINANZ_VORSORGER: 2.0894958924188227
+FINANZ_ANLEGER: 3.4654761780882106
+FINANZ_UNAUFFAELLIGER: 3.768003282678966
+FINANZ_HAUSBAUER: 3.575916533680685
+FINANZTYP: 2.8650316162014597
+GFK_URLAUBERTYP: 8.761986485803689
+GREEN_AVANTGARDE: 0.13676521732477298
+HEALTH_TYP: 2.406689159711841
+LP_LEBENSPHASE_FEIN: 8.958295906261284
+LP_LEBENSPHASE_GROB: 2.9954972991195503
+LP_FAMILIE_FEIN: 2.7989626296495516
+LP_FAMILIE_GROB: 1.881057104695612
+LP_STATUS_FEIN: 1.8612404765145452
+LP_STATUS_GROB: 1.2073017088553053
+NATIONALITAET_KZ: 1.3544852476588485
+RETOURTYP_BK_S: 2.77258879345055
+SEMIO_SOZ: 6.692638288221211
+SEMIO_FAM: 6.684239469062753
+SEMIO_REL: 6.140587594743389
+SEMIO_MAT: 5.042128473591214
+SEMIO_VERT: 6.0314626421918955
+SEMIO_LUST: 2.955457462481209
+SEMIO_ERL: 2.193797396765484
+SEMIO_KULT: 6.827375635355895
+SEMIO_RAT: 4.025576928910938
+SEMIO_KRIT: 2.9372561478187587
+SEMIO_DOM: 2.840697583294932
+SEMIO_KAEM: 2.400362150981148
+SEMIO_PFLICHT: 5.622317920612618
+SEMIO_TRADV: 4.816260727630137
+SHOPPER_TYP: 0.9743732050484385
+SOHO_KZ: 0.008245220502764291
+VERS_TYP: 1.5206853046671804
+ZABEOTYP: 4.258845114391313
+ANZ_PERSONEN: 1.4433890816498303
+ANZ_TITEL: 0.0009783865364262692
+HH_EINKOMMEN_SCORE: 5.55356815110757
+W_KEIT_KIND_HH: 4.479832131827431
+WOHNDAUER_2008: 7.111677369743369
+ANZ_HAUSHALTE_AKTIV: 15.924746541939733
+ANZ_HH_TITEL: 0.05990074841777257
+GEBAEUDETYP: 3.5424562077044026
+KONSUMNAEHE: 2.061826474793157
+MIN_GEBAEUDEJAHR: 1992.3640370072847
+OST_WEST_KZ: 3.6168395481179325
+WOHNLAGE: 7.664075636138972
+CAMEO_DEUG_2015: 0.3621312934833323
+CAMEO_DEU_2015: 1.2692268641328728
+KBA05_ANTG1: 1.1466120020185633
+KBA05_ANTG2: 0.6547583774342456
+KBA05_ANTG3: 2.1273675326454073
+KBA05_ANTG4: 3.136036142283182
+KBA05_GBZ: 5.124726230329287
+BALLRAUM: 3.337728125135656
+EWDICHTE: 3.358728745215858
+INNENSTADT: 2.900999023534901
+GEBAEUDETYP_RASTER: 1.7096049550044905
+KKK: 2.9300661166128745
+MOBI_REGIO: 4.957096752228533
+ONLINE_AFFINITAET: 513.8401296160009
+REGIOTYP: 1.438403337449933
+KBA13_ANZAHL_PKW: 3.2892411391498326
+PLZ8_ANTG1: 2.42361831951705
+PLZ8_ANTG2: 1.3119164922763074
+PLZ8_ANTG3: 3.172632988480096
+PLZ8_ANTG4: 3.7540131168588946
+PLZ8_BAUMAX: 2.6576251151333805
+PLZ8_HHZ: 3.681345301569991
+PLZ8_GBZ: 6.957817171242833
+ARBEIT: 3.7319025265788888
+ORTSGR_KLS9: 0.982213683737286
+RELAT_AB: 3.19890791046465
+DECADE: 4.465995163210897
+MOVEMENT: 1.9800865545578978
+
+Prominent features analysis:
+ALTERSKATEGORIE_GROB: 1.87094954817128 - Other feature interpretation based on data dictionary
+ANREDE_KZ: 0.9631679243399955 - Other feature interpretation based on data dictionary
+CJT_GESAMTTYP: 3.9186575527199654 - Other feature interpretation based on data dictionary
+FINANZ_MINIMALIST: 1.9192382184990433 - Other feature interpretation based on data dictionary
+FINANZ_SPARER: 4.33077079598962 - Other feature interpretation based on data dictionary
+FINANZ_VORSORGER: 2.0894958924188227 - Other feature interpretation based on data dictionary
+FINANZ_ANLEGER: 3.4654761780882106 - Other feature interpretation based on data dictionary
+FINANZ_UNAUFFAELLIGER: 3.768003282678966 - Other feature interpretation based on data dictionary
+FINANZ_HAUSBAUER: 3.575916533680685 - Other feature interpretation based on data dictionary
+FINANZTYP: 2.8650316162014597 - Other feature interpretation based on data dictionary
+GFK_URLAUBERTYP: 8.761986485803689 - Other feature interpretation based on data dictionary
+HEALTH_TYP: 2.406689159711841 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_FEIN: 8.958295906261284 - Other feature interpretation based on data dictionary
+LP_LEBENSPHASE_GROB: 2.9954972991195503 - Other feature interpretation based on data dictionary
+LP_FAMILIE_FEIN: 2.7989626296495516 - Other feature interpretation based on data dictionary
+LP_FAMILIE_GROB: 1.881057104695612 - Other feature interpretation based on data dictionary
+LP_STATUS_FEIN: 1.8612404765145452 - Other feature interpretation based on data dictionary
+LP_STATUS_GROB: 1.2073017088553053 - Other feature interpretation based on data dictionary
+NATIONALITAET_KZ: 1.3544852476588485 - Other feature interpretation based on data dictionary
+RETOURTYP_BK_S: 2.77258879345055 - Other feature interpretation based on data dictionary
+SEMIO_SOZ: 6.692638288221211 - Other feature interpretation based on data dictionary
+SEMIO_FAM: 6.684239469062753 - Other feature interpretation based on data dictionary
+SEMIO_REL: 6.140587594743389 - Other feature interpretation based on data dictionary
+SEMIO_MAT: 5.042128473591214 - Other feature interpretation based on data dictionary
+SEMIO_VERT: 6.0314626421918955 - Other feature interpretation based on data dictionary
+SEMIO_LUST: 2.955457462481209 - Other feature interpretation based on data dictionary
+SEMIO_ERL: 2.193797396765484 - Other feature interpretation based on data dictionary
+SEMIO_KULT: 6.827375635355895 - Other feature interpretation based on data dictionary
+SEMIO_RAT: 4.025576928910938 - Other feature interpretation based on data dictionary
+SEMIO_KRIT: 2.9372561478187587 - Other feature interpretation based on data dictionary
+SEMIO_DOM: 2.840697583294932 - Other feature interpretation based on data dictionary
+SEMIO_KAEM: 2.400362150981148 - Other feature interpretation based on data dictionary
+SEMIO_PFLICHT: 5.622317920612618 - Other feature interpretation based on data dictionary
+SEMIO_TRADV: 4.816260727630137 - Other feature interpretation based on data dictionary
+SHOPPER_TYP: 0.9743732050484385 - Other feature interpretation based on data dictionary
+VERS_TYP: 1.5206853046671804 - Other feature interpretation based on data dictionary
+ZABEOTYP: 4.258845114391313 - Other feature interpretation based on data dictionary
+ANZ_PERSONEN: 1.4433890816498303 - Other feature interpretation based on data dictionary
+HH_EINKOMMEN_SCORE: 5.55356815110757 - Other feature interpretation based on data dictionary
+W_KEIT_KIND_HH: 4.479832131827431 - Other feature interpretation based on data dictionary
+WOHNDAUER_2008: 7.111677369743369 - Other feature interpretation based on data dictionary
+ANZ_HAUSHALTE_AKTIV: 15.924746541939733 - Other feature interpretation based on data dictionary
+GEBAEUDETYP: 3.5424562077044026 - Other feature interpretation based on data dictionary
+KONSUMNAEHE: 2.061826474793157 - Other feature interpretation based on data dictionary
+MIN_GEBAEUDEJAHR: 1992.3640370072847 - Other feature interpretation based on data dictionary
+OST_WEST_KZ: 3.6168395481179325 - Other feature interpretation based on data dictionary
+WOHNLAGE: 7.664075636138972 - Other feature interpretation based on data dictionary
+CAMEO_DEU_2015: 1.2692268641328728 - Other feature interpretation based on data dictionary
+KBA05_ANTG1: 1.1466120020185633 - Other feature interpretation based on data dictionary
+KBA05_ANTG2: 0.6547583774342456 - Other feature interpretation based on data dictionary
+KBA05_ANTG3: 2.1273675326454073 - Other feature interpretation based on data dictionary
+KBA05_ANTG4: 3.136036142283182 - Other feature interpretation based on data dictionary
+KBA05_GBZ: 5.124726230329287 - Other feature interpretation based on data dictionary
+BALLRAUM: 3.337728125135656 - Other feature interpretation based on data dictionary
+EWDICHTE: 3.358728745215858 - Other feature interpretation based on data dictionary
+INNENSTADT: 2.900999023534901 - Other feature interpretation based on data dictionary
+GEBAEUDETYP_RASTER: 1.7096049550044905 - Other feature interpretation based on data dictionary
+KKK: 2.9300661166128745 - Other feature interpretation based on data dictionary
+MOBI_REGIO: 4.957096752228533 - Other feature interpretation based on data dictionary
+ONLINE_AFFINITAET: 513.8401296160009 - Other feature interpretation based on data dictionary
+REGIOTYP: 1.438403337449933 - Other feature interpretation based on data dictionary
+KBA13_ANZAHL_PKW: 3.2892411391498326 - Other feature interpretation based on data dictionary
+PLZ8_ANTG1: 2.42361831951705 - Other feature interpretation based on data dictionary
+PLZ8_ANTG2: 1.3119164922763074 - Other feature interpretation based on data dictionary
+PLZ8_ANTG3: 3.172632988480096 - Other feature interpretation based on data dictionary
+PLZ8_ANTG4: 3.7540131168588946 - Other feature interpretation based on data dictionary
+PLZ8_BAUMAX: 2.6576251151333805 - Other feature interpretation based on data dictionary
+PLZ8_HHZ: 3.681345301569991 - Other feature interpretation based on data dictionary
+PLZ8_GBZ: 6.957817171242833 - Other feature interpretation based on data dictionary
+ARBEIT: 3.7319025265788888 - Other feature interpretation based on data dictionary
+ORTSGR_KLS9: 0.982213683737286 - Other feature interpretation based on data dictionary
+RELAT_AB: 3.19890791046465 - Other feature interpretation based on data dictionary
+DECADE: 4.465995163210897 - Other feature interpretation based on data dictionary
+MOVEMENT: 1.9800865545578978 - Other feature interpretation based on data dictionary
+
+
 </pre>
 </div>
 </div>
@@ -17316,19 +18921,18 @@ SEMIO_VERT: -0.3410344357325908
 <span class="k">if</span> <span class="n">customers_cleaned_numeric</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
 	<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The cleaned customer data is empty after dropping non-numeric columns."</span><span class="p">)</span>
 
-<span class="c1"># Apply the previously fitted StandardScaler to the customer data</span>
 <span class="c1"># Ensure the customer data has the same columns as the general population data</span>
 <span class="n">customers_cleaned_numeric</span> <span class="o">=</span> <span class="n">customers_cleaned_numeric</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">azdias_cleaned_numeric</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-<span class="c1"># Apply the previously fitted StandardScaler to the customer data</span>
-<span class="n">customers_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">customers_cleaned_numeric</span><span class="p">)</span>
-
-<span class="c1"># Handle missing values by imputing with the mean of each column</span>
+<span class="c1"># Impute missing values in the customer data</span>
 <span class="n">imputer</span> <span class="o">=</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s1">'mean'</span><span class="p">)</span>
-<span class="n">customers_scaled_imputed</span> <span class="o">=</span> <span class="n">imputer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">customers_scaled</span><span class="p">)</span>
+<span class="n">customers_imputer</span> <span class="o">=</span> <span class="n">imputer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">customers_cleaned_numeric</span><span class="p">)</span>
 
-<span class="c1"># Apply the previously fitted PCA to the customer data</span>
-<span class="n">customers_pca</span> <span class="o">=</span> <span class="n">pca_selected</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">customers_scaled_imputed</span><span class="p">)</span>
+<span class="c1"># Apply the previously fitted StandardScaler to the customer data</span>
+<span class="n">customers_normalize</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">customers_imputer</span><span class="p">)</span>
+
+<span class="c1"># Apply the previously fitted PCA with the selected number of components to the customer data</span>
+<span class="n">customers_pca</span> <span class="o">=</span> <span class="n">pca_selected</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">customers_normalize</span><span class="p">)</span>
 
 <span class="c1"># Obtain cluster predictions for the customer demographics data</span>
 <span class="n">customer_cluster_predictions</span> <span class="o">=</span> <span class="n">kmeans_final</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">customers_pca</span><span class="p">)</span>
@@ -17348,6 +18952,14 @@ SEMIO_VERT: -0.3410344357325908
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>[5 5 5 5 5 5 5 5 5 5]
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>/opt/anaconda3/lib/python3.12/site-packages/sklearn/utils/validation.py:2739: UserWarning: X does not have valid feature names, but StandardScaler was fitted with feature names
+  warnings.warn(
 </pre>
 </div>
 </div>
